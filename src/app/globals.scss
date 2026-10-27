@@ -1,24 +1,91 @@
-// Global styles for the ChopLingo application.
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-brand: #f27b35;
+  --color-brand-strong: #df5e21;
+  --color-brand-soft: #fff0e5;
+  --color-accent: #f2b84b;
+  --color-background: #fffaf5;
+  --color-background-secondary: #fff4e9;
+  --color-surface: #ffffff;
+  --color-surface-raised: rgba(255, 255, 255, 0.78);
+  --color-text: #28221e;
+  --color-text-muted: #83766d;
+  --color-border: rgba(112, 78, 53, 0.12);
+  --color-shadow: rgba(97, 57, 25, 0.12);
+  --color-glass: rgba(255, 255, 255, 0.68);
+  --color-glass-border: rgba(255, 255, 255, 0.82);
+}
 
-:root {
-  --color-primary: #d94841;
-  --color-text: #252525;
-  --color-background: #ffffff;
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-brand: #ff9552;
+  --color-brand-strong: #ffad76;
+  --color-brand-soft: #3a251b;
+  --color-accent: #f2bf60;
+  --color-background: #171411;
+  --color-background-secondary: #211a15;
+  --color-surface: #241e19;
+  --color-surface-raised: rgba(44, 35, 29, 0.88);
+  --color-text: #fff7f0;
+  --color-text-muted: #b9a99d;
+  --color-border: rgba(255, 238, 222, 0.11);
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  --color-glass: rgba(44, 35, 29, 0.72);
+  --color-glass-border: rgba(255, 245, 234, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  scroll-behavior: smooth;
 }
 
 body {
+  min-height: 100vh;
   margin: 0;
-  background-color: var(--color-background);
+  background:
+    radial-gradient(ellipse at 86% 16%, rgba(255, 203, 147, 0.2), transparent 30rem),
+    var(--color-background);
   color: var(--color-text);
-  font-family: Arial, sans-serif;
+  font-family: var(--font-poppins), sans-serif;
+  transition: background-color 220ms ease, color 220ms ease;
 }
 
-// This is nested SCSS syntax.
-// It demonstrates that Sass is compiling the file correctly.
-h1 {
-  color: var(--color-primary);
+button,
+a {
+  font: inherit;
+}
 
-  &:hover {
-    opacity: 0.8;
+button {
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--color-brand);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
