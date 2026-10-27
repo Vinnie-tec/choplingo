@@ -1,0 +1,24 @@
+// Global styles for the ChopLingo application.
+
+:root {
+  --color-primary: #d94841;
+  --color-text: #252525;
+  --color-background: #ffffff;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: Arial, sans-serif;
+}
+
+// This is nested SCSS syntax.
+// It demonstrates that Sass is compiling the file correctly.
+h1 {
+  color: var(--color-primary);
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
