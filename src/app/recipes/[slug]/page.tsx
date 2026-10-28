@@ -13,6 +13,7 @@ import {
 
 import ServingCalculator from "@/components/serving-calculator";
 import ReviewForm from "@/components/review-form";
+import { getRecipeReviews } from "@/lib/db/queries/reviews";
 
 export const instant = false;
 
@@ -72,6 +73,8 @@ export default async function RecipeDetailPage({
     .innerJoin(ingredients, eq(recipeIngredients.ingredientId, ingredients.id))
     .where(eq(recipeIngredients.recipeId, recipe.id));
 
+  const reviewData = await getRecipeReviews(recipe.id, session.user.id);
+
   // 6. Render the recipe.
   return (
     <main>
@@ -105,7 +108,39 @@ export default async function RecipeDetailPage({
 
       <section>
         <h2>Rate this recipe</h2>
-        <ReviewForm recipeId={recipe.id} />
+        <ReviewForm
+          recipeId={recipe.id}
+          initialRating={reviewData.myReview?.rating ?? 0}
+          initialComment={reviewData.myReview?.comment ?? ""}
+        />
+      </section>
+
+      <section>
+        <h2>Reviews and ratings</h2>
+
+        <p>
+          {reviewData.totalReviews > 0
+            ? `★ ${reviewData.averageRating} / 5 (${reviewData.totalReviews} ${
+                reviewData.totalReviews === 1 ? "review" : "reviews"
+              })`
+            : "No reviews yet. Be the first to review this recipe!"}
+        </p>
+
+        {reviewData.reviews.map((review) => (
+          <article key={review.id}>
+            <h3>{review.reviewerName}</h3>
+            <p aria-label={`${review.rating} out of 5 stars`}>
+              {"★".repeat(review.rating)}
+              {"☆".repeat(5 - review.rating)}
+            </p>
+
+            {review.comment && <p>{review.comment}</p>}
+
+            <time dateTime={review.createdAt.toISOString()}>
+              {review.createdAt.toLocaleDateString()}
+            </time>
+          </article>
+        ))}
       </section>
     </main>
   );
