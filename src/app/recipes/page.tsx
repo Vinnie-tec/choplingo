@@ -6,7 +6,6 @@ import { desc, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { recipes, categories } from "@/lib/db/schema/recipe";
-import Link from "next/link";
 
 import RecipeList from "@/components/recipe-list";
 
