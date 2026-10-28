@@ -41,3 +41,10 @@ their first visit and remembers their choice in local storage.
 
 Keep page-specific Sass in colocated `.module.scss` files, and use the global
 tokens rather than hard-coding theme colors in components.
+
+## Authentication and notifications
+
+The shared navigation reads the Better Auth session and displays a sign-in
+link when signed out, or a personalized greeting and sign-out action when
+signed in. Login and registration forms use the shared theme tokens and send
+success or error feedback through the global toast provider.

@@ -8,16 +8,6 @@
   margin: 0 auto;
 }
 
-.header {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 92px;
-  border-bottom: 1px solid var(--color-border);
-}
-
 .brand {
   display: inline-flex;
   align-items: center;
@@ -48,37 +38,6 @@
 
 .brandAccent {
   color: var(--color-brand);
-}
-
-.nav {
-  display: flex;
-  align-items: center;
-  gap: 34px;
-}
-
-.navLink,
-.navLinkActive {
-  font-size: 13px;
-  font-weight: 600;
-  transition: color 180ms ease;
-
-  &:hover {
-    color: var(--color-brand);
-  }
-}
-
-.navLink {
-  color: var(--color-text-muted);
-}
-
-.navLinkActive {
-  color: var(--color-brand-strong);
-}
-
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }
 
 .themeToggle {
@@ -113,36 +72,6 @@
 :global(html[data-theme="light"]) .themeToggle .sunIcon,
 :global(html[data-theme="dark"]) .themeToggle .moonIcon {
   display: none;
-}
-
-.headerCta,
-.primaryButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #ff9a54, var(--color-brand-strong));
-  box-shadow: 0 9px 22px rgba(224, 99, 38, 0.2);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  transition: box-shadow 180ms ease, transform 180ms ease;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(224, 99, 38, 0.3);
-  }
-
-  span {
-    font-size: 17px;
-    line-height: 1;
-  }
-}
-
-.headerCta {
-  min-height: 42px;
-  padding: 0 19px;
 }
 
 .hero {
@@ -676,10 +605,6 @@
     width: calc(100% - 36px);
   }
 
-  .header {
-    min-height: 76px;
-  }
-
   .brand {
     gap: 7px;
     font-size: 18px;
@@ -695,23 +620,9 @@
     }
   }
 
-  .nav {
-    display: none;
-  }
-
-  .headerActions {
-    gap: 8px;
-  }
-
   .themeToggle {
     width: 38px;
     height: 38px;
-  }
-
-  .headerCta {
-    min-height: 38px;
-    padding: 0 13px;
-    font-size: 11px;
   }
 
   .hero {
@@ -812,8 +723,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .headerCta,
-  .primaryButton,
   .foodCard,
   .themeToggle {
     transition: none;

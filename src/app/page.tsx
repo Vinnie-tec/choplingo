@@ -1,36 +1,10 @@
 
-import ThemeToggle from "./ThemeToggle";
 import styles from "./page.module.scss";
 
 export default function Home() {
   return (
     <main className={styles.page}>
       <div className={styles.container}>
-        <header className={styles.header}>
-          <a aria-label="ChopLingo home" className={styles.brand} href="#">
-            <span aria-hidden="true" className={styles.brandMark}>
-              <svg viewBox="0 0 32 32">
-                <path d="M5 17h22c-.7 6.1-4.9 10-11 10S5.7 23.1 5 17Z" />
-                <path d="M8 13.5c1.7-1.6 3.4-1.6 5.1 0m3.3 0c1.7-1.6 3.4-1.6 5.1 0M16 8V5m-4 4-2-2m10 2 2-2" />
-              </svg>
-            </span>
-            <span>chop<span className={styles.brandAccent}>lingo</span></span>
-          </a>
-
-          <nav aria-label="Main navigation" className={styles.nav}>
-            <a className={styles.navLinkActive} href="#menu">Discover</a>
-            <a className={styles.navLink} href="#how-it-works">Our story</a>
-            <a className={styles.navLink} href="#reviews">Reviews</a>
-          </nav>
-
-          <div className={styles.headerActions}>
-            <ThemeToggle />
-            <a className={styles.headerCta} href="#menu">
-              Explore menu <span aria-hidden="true">↗</span>
-            </a>
-          </div>
-        </header>
-
         <section aria-labelledby="hero-title" className={styles.hero}>
           <div className={styles.heroCopy}>
             <span className={styles.eyebrow}>

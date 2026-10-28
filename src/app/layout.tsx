@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.scss";
 import { Poppins } from "next/font/google";
 
+import SiteNav from "@/components/site-nav";
 import { ToastProvider } from "@/components/toast-provider";
 
 export const metadata: Metadata = {
@@ -28,7 +29,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-gr-ext-installed=""
     >
       <body>
-        <ToastProvider>{children}</ToastProvider>
+        <ToastProvider>
+          <SiteNav />
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );

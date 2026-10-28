@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import styles from "./toast-provider.module.scss";
 
 type ToastType = "success" | "error" | "info";
 
@@ -41,18 +42,21 @@ function ToastItem({
 
   return (
     <div
+      className={styles.toast}
       role={toast.type === "error" ? "alert" : "status"}
       aria-atomic="true"
       data-type={toast.type}
     >
+      <span aria-hidden="true" className={styles.icon} />
       <p>{toast.message}</p>
 
       <button
+        className={styles.dismiss}
         type="button"
         onClick={() => onDismiss(toast.id)}
         aria-label="Dismiss notification"
       >
-        Dismiss
+        <span aria-hidden="true">×</span>
       </button>
     </div>
   );
@@ -83,7 +87,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={{ showToast }}>
       {children}
 
-      <div aria-label="Notifications" data-toast-container>
+      <div aria-label="Notifications" className={styles.container} data-toast-container>
         {toasts.map((toast) => (
           <ToastItem
             key={toast.id}

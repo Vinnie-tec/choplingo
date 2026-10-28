@@ -1,0 +1,132 @@
+.container {
+  position: fixed;
+  z-index: 20;
+  top: 20px;
+  right: 20px;
+  display: grid;
+  width: min(390px, calc(100vw - 32px));
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  min-height: 66px;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 13px 13px 15px;
+  border: 1px solid var(--color-glass-border);
+  border-left: 3px solid var(--color-brand);
+  border-radius: 16px;
+  background: var(--color-glass);
+  box-shadow: 0 16px 42px var(--color-shadow);
+  color: var(--color-text);
+  pointer-events: auto;
+  backdrop-filter: blur(20px);
+  animation: toast-enter 220ms ease-out both;
+
+  &[data-type="success"] {
+    border-left-color: #3eaa76;
+  }
+
+  &[data-type="error"] {
+    border-left-color: #df594c;
+  }
+
+  &[data-type="info"] {
+    border-left-color: var(--color-brand);
+  }
+
+  p {
+    flex: 1;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.55;
+  }
+}
+
+.icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand-strong);
+
+  &::before {
+    content: "i";
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  [data-type="success"] & {
+    background: rgba(62, 170, 118, 0.13);
+    color: #319364;
+
+    &::before {
+      content: "✓";
+    }
+  }
+
+  [data-type="error"] & {
+    background: rgba(223, 89, 76, 0.13);
+    color: #d54d40;
+
+    &::before {
+      content: "!";
+    }
+  }
+}
+
+.dismiss {
+  display: grid;
+  width: 31px;
+  height: 31px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+
+  &:hover {
+    background: var(--color-brand-soft);
+    color: var(--color-text);
+  }
+
+  span {
+    font-size: 21px;
+    line-height: 1;
+  }
+}
+
+@keyframes toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 520px) {
+  .container {
+    top: 12px;
+    right: 12px;
+    width: calc(100vw - 24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}
