@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.scss";
 import { Poppins } from "next/font/google";
+import { Suspense } from "react";
 
 import SiteNav from "@/components/site-nav";
 import { ToastProvider } from "@/components/toast-provider";
@@ -27,10 +28,19 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-lt-installed="true"
       data-new-gr-c-s-check-loaded="14.1342.0"
       data-gr-ext-installed=""
+      data-scroll-behavior="smooth"
     >
       <body data-new-gr-c-s-check-loaded="14.1342.0" data-gr-ext-installed="">
         <ToastProvider>
-          <SiteNav />
+          <Suspense
+            fallback={
+              <header aria-busy="true" aria-label="Loading navigation">
+                <div className="site-nav-loading">Loading navigation...</div>
+              </header>
+            }
+          >
+            <SiteNav />
+          </Suspense>
           {children}
         </ToastProvider>
       </body>
