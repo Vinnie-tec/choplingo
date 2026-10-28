@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { recipes, categories } from "@/lib/db/schema/recipe";
 
 import RecipeList from "@/components/recipe-list";
+import { getUserFavouriteRecipeIds } from "@/lib/db/queries/favourites";
 
 export const instant = false;
 
@@ -28,6 +29,8 @@ export default async function RecipesPage() {
     redirect("/login");
   }
 
+  const favouriteIds = await getUserFavouriteRecipeIds(session.user.id);
+
   // 4. Fetch recipes and their category names from PostgreSQL.
   const recipeList = await db
     .select({
@@ -44,6 +47,11 @@ export default async function RecipesPage() {
     .from(recipes)
     .innerJoin(categories, eq(recipes.categoryId, categories.id))
     .orderBy(desc(recipes.createdAt));
+
+  const recipesWithFavourites = recipeList.map((recipe) => ({
+    ...recipe,
+    isFavourite: favouriteIds.has(recipe.id),
+  }));
 
   return (
     <main>
@@ -63,7 +71,7 @@ export default async function RecipesPage() {
           </p>
         </section>
       ) : (
-        <RecipeList recipes={recipeList} />
+        <RecipeList recipes={recipesWithFavourites} />
       )}
     </main>
   );

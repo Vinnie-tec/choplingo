@@ -1,8 +1,9 @@
-
 "use client";
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+
+import FavouriteButton from "@/components/favourite-button";
 
 type Recipe = {
   id: number;
@@ -14,6 +15,7 @@ type Recipe = {
   servings: number;
   difficulty: string;
   categoryName: string;
+  isFavourite: boolean;
 };
 
 type RecipeListProps = {
@@ -40,8 +42,7 @@ export default function RecipeList({ recipes }: RecipeListProps) {
         recipe.description.toLowerCase().includes(searchTerm);
 
       const matchesCategory =
-        selectedCategory === "all" ||
-        recipe.categoryName === selectedCategory;
+        selectedCategory === "all" || recipe.categoryName === selectedCategory;
 
       return matchesSearch && matchesCategory;
     });
@@ -87,9 +88,7 @@ export default function RecipeList({ recipes }: RecipeListProps) {
               <p>{recipe.categoryName}</p>
 
               <h2>
-                <Link href={`/recipes/${recipe.slug}`}>
-                  {recipe.title}
-                </Link>
+                <Link href={`/recipes/${recipe.slug}`}>{recipe.title}</Link>
               </h2>
 
               <p>{recipe.description}</p>
@@ -97,6 +96,11 @@ export default function RecipeList({ recipes }: RecipeListProps) {
               <p>Cooking: {recipe.cookingMinutes} minutes</p>
               <p>Serves: {recipe.servings}</p>
               <p>Difficulty: {recipe.difficulty}</p>
+              
+              <FavouriteButton
+                recipeId={recipe.id}
+                initialIsFavourite={recipe.isFavourite}
+              />
             </article>
           ))}
         </div>
