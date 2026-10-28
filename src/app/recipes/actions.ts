@@ -1,4 +1,3 @@
-
 "use server";
 
 import { headers } from "next/headers";
@@ -54,23 +53,33 @@ export async function saveFavourite(
 
   // 4. Save this recipe for the authenticated user.
   // The composite primary key prevents duplicate entries.
-  await db
-    .insert(recipeFavourites)
-    .values({
-      userId: session.user.id,
-      recipeId,
-    })
-    .onConflictDoNothing();
 
-  // 5. Refresh pages that display favourite information.
-  revalidatePath("/recipes");
-  revalidatePath("/favourites");
-  revalidatePath(`/recipes/${recipeId}`);
+  try {
+    await db
+      .insert(recipeFavourites)
+      .values({
+        userId: session.user.id,
+        recipeId,
+      })
+      .onConflictDoNothing();
 
-  return {
-    success: true,
-    message: "Recipe added to your favourites.",
-  };
+    revalidatePath("/recipes");
+    revalidatePath("/favourites");
+
+    return {
+      success: true,
+      message: "Recipe added to your favourites.",
+    };
+  } catch (error) {
+    // Log the technical details on the server for debugging.
+    console.error("Failed to save favourite:", error);
+
+    // Return a safe message to the browser.
+    return {
+      success: false,
+      message: "We couldn't save this favourite. Please try again.",
+    };
+  }
 }
 
 export async function removeFavourite(
@@ -96,21 +105,33 @@ export async function removeFavourite(
 
   // Both conditions are essential:
   // the recipe ID and the authenticated user's ID must match.
-  await db
-    .delete(recipeFavourites)
-    .where(
-      and(
-        eq(recipeFavourites.recipeId, recipeId),
-        eq(recipeFavourites.userId, session.user.id),
-      ),
-    );
 
-  revalidatePath("/recipes");
-  revalidatePath("/favourites");
-  revalidatePath(`/recipes/${recipeId}`);
+  try {
+    await db
+      .delete(recipeFavourites)
+      .where(
+        and(
+          eq(recipeFavourites.recipeId, recipeId),
+          eq(recipeFavourites.userId, session.user.id),
+        ),
+      );
 
-  return {
-    success: true,
-    message: "Recipe removed from your favourites.",
-  };
+    revalidatePath("/recipes");
+    revalidatePath("/favourites");
+    revalidatePath(`/recipes/${recipeId}`);
+
+    return {
+      success: true,
+      message: "Recipe removed from your favourites.",
+    };
+  } catch (error) {
+    // Log the technical details on the server for debugging.
+    console.error("Failed to remove favourite:", error);
+
+    // Return a safe message to the browser.
+    return {
+      success: false,
+      message: "We couldn't remove this favourite. Please try again.",
+    };
+  }
 }

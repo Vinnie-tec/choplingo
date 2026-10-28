@@ -4,6 +4,7 @@ import { Pool } from "pg";
 import * as authSchema from "./schema/auth";
 import * as recipeSchema from "./schema/recipe";
 import * as favouriteSchema from "./schema/favourite";
+import * as reviewSchema from "./schema/review";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -20,5 +21,6 @@ export const db = drizzle(pool, {
     ...recipeSchema,
     ...authSchema,
     ...favouriteSchema,
+    ...reviewSchema,
   },
 });
