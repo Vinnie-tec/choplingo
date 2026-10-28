@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.scss";
 import { Poppins } from "next/font/google";
 
+import { ToastProvider } from "@/components/toast-provider";
+
 export const metadata: Metadata = {
   title: "ChopLingo | Good food, better days",
   description: "Find fresh inspiration and feel-good food with ChopLingo.",
@@ -25,7 +27,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-new-gr-c-s-check-loaded="14.1342.0"
       data-gr-ext-installed=""
     >
-      <body>{children}</body>
+      <body>
+        <ToastProvider>{children}</ToastProvider>
+      </body>
     </html>
   );
 }
