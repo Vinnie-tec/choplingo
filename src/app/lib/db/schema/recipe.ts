@@ -7,6 +7,7 @@ import {
   timestamp,
   jsonb,
   uniqueIndex,
+  numeric,
 } from "drizzle-orm/pg-core";
 
 /**
@@ -44,9 +45,7 @@ export const categories = pgTable(
       .defaultNow()
       .notNull(),
   },
-  (table) => [
-    uniqueIndex("categories_slug_unique").on(table.slug),
-  ],
+  (table) => [uniqueIndex("categories_slug_unique").on(table.slug)],
 );
 
 /**
@@ -72,11 +71,9 @@ export const recipes = pgTable(
       .notNull()
       .references(() => categories.id, { onDelete: "restrict" }),
 
-    preparationMinutes: integer("preparation_minutes")
-      .notNull(),
+    preparationMinutes: integer("preparation_minutes").notNull(),
 
-    cookingMinutes: integer("cooking_minutes")
-      .notNull(),
+    cookingMinutes: integer("cooking_minutes").notNull(),
 
     // Number of people the original ingredient quantities serve.
     servings: integer("servings").notNull().default(4),
@@ -92,9 +89,7 @@ export const recipes = pgTable(
      *   { "step": 2, "instruction": "Prepare the sauce." }
      * ]
      */
-    instructions: jsonb("instructions")
-      .$type<RecipeStep[]>()
-      .notNull(),
+    instructions: jsonb("instructions").$type<RecipeStep[]>().notNull(),
 
     // We'll connect image uploads to Cloudinary later.
     imageUrl: text("image_url"),
@@ -107,9 +102,7 @@ export const recipes = pgTable(
       .defaultNow()
       .notNull(),
   },
-  (table) => [
-    uniqueIndex("recipes_slug_unique").on(table.slug),
-  ],
+  (table) => [uniqueIndex("recipes_slug_unique").on(table.slug)],
 );
 
 /**
@@ -128,9 +121,7 @@ export const ingredients = pgTable(
       .defaultNow()
       .notNull(),
   },
-  (table) => [
-    uniqueIndex("ingredients_name_unique").on(table.name),
-  ],
+  (table) => [uniqueIndex("ingredients_name_unique").on(table.name)],
 );
 
 /**
@@ -152,8 +143,12 @@ export const recipeIngredients = pgTable(
       .notNull()
       .references(() => ingredients.id, { onDelete: "restrict" }),
 
-    // Example: 2, with the unit recorded as "cups".
-    quantity: integer("quantity").notNull(),
+    // Example: 2, with the unit recorded as "cups".change the quantity column from an integer
+    quantity: numeric("quantity", {
+      precision: 10,
+      scale: 2,
+      mode: "number",
+    }).notNull(),
 
     unit: varchar("unit", { length: 40 }).notNull(),
 
