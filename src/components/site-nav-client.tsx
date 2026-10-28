@@ -72,8 +72,8 @@ export default function SiteNavClient({
           <Link className={styles.navLink} href="/#how-it-works">
             Our story
           </Link>
-          <Link className={styles.navLink} href="/#reviews">
-            Reviews
+          <Link className={styles.navLink} href="/recipes">
+            Recipes
           </Link>
         </nav>
 
