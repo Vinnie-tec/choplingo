@@ -6,6 +6,7 @@ import { desc, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { recipes, categories } from "@/lib/db/schema/recipe";
+import Link from "next/link";
 
 export const instant = false;
 
@@ -64,16 +65,14 @@ export default async function RecipesPage() {
         <section aria-label="Recipe collection">
           {recipeList.map((recipe) => (
             <article key={recipe.id}>
-              <p>{recipe.categoryName}</p>
-              <h2>{recipe.title}</h2>
-              <p>{recipe.description}</p>
+              <h2>
+                <Link href={`/recipes/${recipe.slug}`}>{recipe.title}</Link>
+              </h2>
 
-              <ul>
-                <li>Preparation: {recipe.preparationMinutes} minutes</li>
-                <li>Cooking: {recipe.cookingMinutes} minutes</li>
-                <li>Serves: {recipe.servings}</li>
-                <li>Difficulty: {recipe.difficulty}</li>
-              </ul>
+              <p>{recipe.description}</p>
+              <p>Category: {recipe.categoryName}</p>
+              <p>Preparation: {recipe.preparationMinutes} minutes</p>
+              <p>Cooking: {recipe.cookingMinutes} minutes</p>
             </article>
           ))}
         </section>
