@@ -8,6 +8,8 @@ import { db } from "@/lib/db";
 import { recipes, categories } from "@/lib/db/schema/recipe";
 import Link from "next/link";
 
+import RecipeList from "@/components/recipe-list";
+
 export const instant = false;
 
 export default async function RecipesPage() {
@@ -62,20 +64,7 @@ export default async function RecipesPage() {
           </p>
         </section>
       ) : (
-        <section aria-label="Recipe collection">
-          {recipeList.map((recipe) => (
-            <article key={recipe.id}>
-              <h2>
-                <Link href={`/recipes/${recipe.slug}`}>{recipe.title}</Link>
-              </h2>
-
-              <p>{recipe.description}</p>
-              <p>Category: {recipe.categoryName}</p>
-              <p>Preparation: {recipe.preparationMinutes} minutes</p>
-              <p>Cooking: {recipe.cookingMinutes} minutes</p>
-            </article>
-          ))}
-        </section>
+        <RecipeList recipes={recipeList} />
       )}
     </main>
   );
