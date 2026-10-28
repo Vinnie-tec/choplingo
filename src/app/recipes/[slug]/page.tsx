@@ -1,4 +1,3 @@
-
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
@@ -11,6 +10,8 @@ import {
   recipeIngredients,
   ingredients,
 } from "@/lib/db/schema/recipe";
+
+import ServingCalculator from "@/components/serving-calculator";
 
 export const instant = false;
 
@@ -49,10 +50,7 @@ export default async function RecipeDetailPage({
       categoryName: categories.name,
     })
     .from(recipes)
-    .innerJoin(
-      categories,
-      eq(recipes.categoryId, categories.id),
-    )
+    .innerJoin(categories, eq(recipes.categoryId, categories.id))
     .where(eq(recipes.slug, slug))
     .limit(1);
 
@@ -70,10 +68,7 @@ export default async function RecipeDetailPage({
       notes: recipeIngredients.notes,
     })
     .from(recipeIngredients)
-    .innerJoin(
-      ingredients,
-      eq(recipeIngredients.ingredientId, ingredients.id),
-    )
+    .innerJoin(ingredients, eq(recipeIngredients.ingredientId, ingredients.id))
     .where(eq(recipeIngredients.recipeId, recipe.id));
 
   // 6. Render the recipe.
@@ -92,27 +87,17 @@ export default async function RecipeDetailPage({
         <p>Difficulty: {recipe.difficulty}</p>
       </section>
 
-      <section>
-        <h2>Ingredients</h2>
-
-        <ul>
-          {recipeIngredientList.map((item) => (
-            <li key={item.name}>
-              {item.quantity} {item.unit} {item.name}
-              {item.notes ? ` — ${item.notes}` : ""}
-            </li>
-          ))}
-        </ul>
-      </section>
+      <ServingCalculator
+        originalServings={recipe.servings}
+        ingredients={recipeIngredientList}
+      />
 
       <section>
         <h2>Preparation steps</h2>
 
         <ol>
           {recipe.instructions.map((step) => (
-            <li key={step.step}>
-              {step.instruction}
-            </li>
+            <li key={step.step}>{step.instruction}</li>
           ))}
         </ol>
       </section>
