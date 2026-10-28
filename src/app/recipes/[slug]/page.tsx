@@ -12,6 +12,7 @@ import {
 } from "@/lib/db/schema/recipe";
 
 import ServingCalculator from "@/components/serving-calculator";
+import ReviewForm from "@/components/review-form";
 
 export const instant = false;
 
@@ -100,6 +101,11 @@ export default async function RecipeDetailPage({
             <li key={step.step}>{step.instruction}</li>
           ))}
         </ol>
+      </section>
+
+      <section>
+        <h2>Rate this recipe</h2>
+        <ReviewForm recipeId={recipe.id} />
       </section>
     </main>
   );
