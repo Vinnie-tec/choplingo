@@ -72,6 +72,61 @@
   gap: 11px;
 }
 
+.authLoading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.loadingGreeting,
+.loadingButton,
+.loadingButtonPrimary {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      100deg,
+      var(--color-glass) 25%,
+      var(--color-background-secondary) 42%,
+      var(--color-glass) 63%
+    );
+  background-size: 220% 100%;
+  animation: auth-loading 1.4s ease-in-out infinite;
+}
+
+.loadingGreeting {
+  width: 70px;
+  height: 12px;
+  border: 0;
+  border-radius: 6px;
+}
+
+.loadingButton,
+.loadingButtonPrimary {
+  width: 82px;
+  height: 42px;
+}
+
+.loadingButtonPrimary {
+  width: 112px;
+  border-color: transparent;
+  background-image:
+    linear-gradient(
+      100deg,
+      var(--color-brand) 25%,
+      #ffb078 42%,
+      var(--color-brand) 63%
+    );
+}
+
+@keyframes auth-loading {
+  to {
+    background-position-x: -220%;
+  }
+}
+
 .greeting {
   color: var(--color-text-muted);
   font-size: 12px;
@@ -168,10 +223,36 @@
     gap: 7px;
   }
 
+  .authLoading {
+    gap: 6px;
+  }
+
+  .loadingGreeting {
+    width: 48px;
+  }
+
+  .loadingButton,
+  .loadingButtonPrimary {
+    width: 62px;
+    height: 38px;
+  }
+
+  .loadingButtonPrimary {
+    width: 78px;
+  }
+
   .authButton,
   .primaryButton {
     min-height: 38px;
     padding: 0 12px;
     font-size: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingGreeting,
+  .loadingButton,
+  .loadingButtonPrimary {
+    animation: none;
   }
 }

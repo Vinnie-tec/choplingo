@@ -7,7 +7,7 @@ import ThemeToggle from "@/app/ThemeToggle";
 import styles from "./site-nav.module.scss";
 
 export default function SiteNav() {
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
   const { showToast } = useToast();
   const user = session?.user;
 
@@ -46,25 +46,40 @@ export default function SiteNav() {
         </nav>
 
         <div className={styles.actions}>
-          {user && (
-            <span className={styles.greeting}>
-              Hi <strong>{user.name.trim()}</strong>
-            </span>
-          )}
           <ThemeToggle />
-          {user ? (
-            <button className={styles.authButton} onClick={handleSignOut} type="button">
-              Sign out
-            </button>
+          {isPending ? (
+            <div
+              aria-busy="true"
+              aria-label="Checking your account"
+              className={styles.authLoading}
+              role="status"
+            >
+              <span className={styles.loadingGreeting} />
+              <span className={styles.loadingButton} />
+              <span className={styles.loadingButtonPrimary} />
+            </div>
           ) : (
-            <Link className={styles.authButton} href="/login">
-              Sign in
-            </Link>
-          )}
-          {!user && (
-            <Link className={styles.primaryButton} href="/register">
-              Get started <span aria-hidden="true">↗</span>
-            </Link>
+            <>
+              {user && (
+                <span className={styles.greeting}>
+                  Hi <strong>{user.name.trim()}</strong>
+                </span>
+              )}
+              {user ? (
+                <button className={styles.authButton} onClick={handleSignOut} type="button">
+                  Sign out
+                </button>
+              ) : (
+                <>
+                  <Link className={styles.authButton} href="/login">
+                    Sign in
+                  </Link>
+                  <Link className={styles.primaryButton} href="/register">
+                    Get started <span aria-hidden="true">↗</span>
+                  </Link>
+                </>
+              )}
+            </>
           )}
         </div>
       </div>

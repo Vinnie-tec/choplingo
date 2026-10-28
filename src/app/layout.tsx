@@ -28,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       data-new-gr-c-s-check-loaded="14.1342.0"
       data-gr-ext-installed=""
     >
-      <body>
+      <body data-new-gr-c-s-check-loaded="14.1342.0" data-gr-ext-installed="">
         <ToastProvider>
           <SiteNav />
           {children}
