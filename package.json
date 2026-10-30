@@ -10,6 +10,9 @@
     "db:seed": "tsx --import ./scripts/load-env.mjs src/lib/db/seed.ts"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.106",
+    "@ai-sdk/react": "^4.0.162",
+    "ai": "^7.0.158",
     "better-auth": "^1.7.14",
     "dotenv": "^18.0.9",
     "drizzle-orm": "^0.45.4",
