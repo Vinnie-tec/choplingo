@@ -12,6 +12,7 @@ import {
 } from "@/lib/db/schema/recipe";
 import { recipeFavourites } from "@/lib/db/schema/favourite";
 import RecipeList from "@/components/recipe-list";
+import Link from "next/link";
 
 export const instant = false;
 
@@ -71,7 +72,7 @@ export default async function FavouritesPage() {
             Explore our recipes and save the ones you want
             to cook later.
           </p>
-          <a href="/recipes">Explore recipes</a>
+          <Link href="/recipes">Explore recipes</Link>
         </section>
       )}
     </main>
