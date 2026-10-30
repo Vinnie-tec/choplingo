@@ -11,10 +11,10 @@ import {
   ingredients,
 } from "@/lib/db/schema/recipe";
 
-
 import ServingCalculator from "@/components/serving-calculator";
 import ReviewForm from "@/components/review-form";
 import { getRecipeReviews } from "@/lib/db/queries/reviews";
+import CookingAssistant from "@/components/cooking-assistant";
 
 export const instant = false;
 
@@ -143,6 +143,8 @@ export default async function RecipeDetailPage({
           </article>
         ))}
       </section>
+
+      <CookingAssistant recipeId={recipe.id} recipeTitle={recipe.title} />
     </main>
   );
 }
