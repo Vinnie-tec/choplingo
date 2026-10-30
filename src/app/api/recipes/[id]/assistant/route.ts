@@ -1,3 +1,5 @@
+import { getMockCookingResponse } from "@/lib/ai/mock-cooking-assistant";
+
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { headers } from "next/headers";
@@ -42,10 +44,7 @@ export async function POST(
     const recipeId = Number(id);
 
     if (!Number.isSafeInteger(recipeId) || recipeId <= 0) {
-      return Response.json(
-        { error: "Invalid recipe ID." },
-        { status: 400 },
-      );
+      return Response.json({ error: "Invalid recipe ID." }, { status: 400 });
     }
 
     // 3. Validate the request body.
@@ -79,10 +78,7 @@ export async function POST(
       .limit(1);
 
     if (!recipe) {
-      return Response.json(
-        { error: "Recipe not found." },
-        { status: 404 },
-      );
+      return Response.json({ error: "Recipe not found." }, { status: 404 });
     }
 
     // 5. Fetch the recipe's ingredients.
@@ -96,7 +92,7 @@ export async function POST(
       .from(recipeIngredients)
       .innerJoin(
         ingredients,
-        eq(recipeIngredients.ingredientId, ingredients.id)
+        eq(recipeIngredients.ingredientId, ingredients.id),
       )
       .where(eq(recipeIngredients.recipeId, recipe.id));
 
@@ -110,6 +106,16 @@ export async function POST(
       ingredients: recipeIngredientList,
       instructions: recipe.instructions,
     };
+
+    // Use simulated responses during development to avoid API costs.
+    if (process.env.AI_MOCK_MODE === "true") {
+      const mockResult = getMockCookingResponse(
+        parsed.data.question,
+        recipe.title,
+      );
+
+      return Response.json(mockResult);
+    }
 
     // 7. Generate a recipe-aware answer.
     const model = process.env.OPENAI_MODEL;
