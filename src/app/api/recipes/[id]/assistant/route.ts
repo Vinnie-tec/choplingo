@@ -1,4 +1,5 @@
 import { getMockCookingResponse } from "@/lib/ai/mock-cooking-assistant";
+import { checkAssistantRateLimit } from "@/lib/ai/rate-limit";
 
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
@@ -36,6 +37,31 @@ export async function POST(
       return Response.json(
         { error: "Please sign in to use the cooking assistant." },
         { status: 401 },
+      );
+    }
+
+    // Check how many assistant requests this user has made.
+    const rateLimit = await checkAssistantRateLimit(session.user.id);
+
+    if (!rateLimit.allowed) {
+      return Response.json(
+        {
+          error:
+            "You've reached your cooking assistant request limit. Please try again shortly.",
+          remaining: rateLimit.remaining,
+          resetAt: rateLimit.resetAt,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(
+              Math.max(
+                1,
+                Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000),
+              ),
+            ),
+          },
+        },
       );
     }
 
