@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { submitReview } from "@/app/recipes/review-actions";
 import { useToast } from "@/components/toast-provider";
 
+import styles from "./review-form.module.scss";
+
 type ReviewFormProps = {
   recipeId: number;
   initialRating?: number;
@@ -47,13 +49,18 @@ export default function ReviewForm({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <fieldset disabled={isPending}>
-        <legend>Your rating</legend>
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <fieldset className={styles.fieldset} disabled={isPending}>
+        <legend className={styles.legend}>Your rating</legend>
 
-        <div role="group" aria-label="Choose a rating from 1 to 5 stars">
+        <div
+          className={styles.rating}
+          role="group"
+          aria-label="Choose a rating from 1 to 5 stars"
+        >
           {[1, 2, 3, 4, 5].map((star) => (
             <button
+              className={styles.star}
               key={star}
               type="button"
               aria-label={`${star} ${star === 1 ? "star" : "stars"}`}
@@ -65,8 +72,11 @@ export default function ReviewForm({
           ))}
         </div>
 
-        <label htmlFor="review-comment">Your review (optional)</label>
+        <label className={styles.label} htmlFor="review-comment">
+          Your review (optional)
+        </label>
         <textarea
+          className={styles.comment}
           id="review-comment"
           value={comment}
           onChange={(event) => setComment(event.target.value)}
@@ -75,9 +85,9 @@ export default function ReviewForm({
           placeholder="How did the recipe turn out?"
         />
 
-        <p>{comment.length}/1000 characters</p>
+        <p className={styles.characterCount}>{comment.length}/1000 characters</p>
 
-        <button type="submit">
+        <button className={styles.submitButton} type="submit">
           {isPending ? "Saving review..." : "Submit review"}
         </button>
       </fieldset>

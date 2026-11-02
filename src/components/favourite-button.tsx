@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { saveFavourite, removeFavourite } from "@/app/recipes/actions";
 import { useToast } from "@/components/toast-provider";
 
+import styles from "./favourite-button.module.scss";
+
 type FavouriteButtonProps = {
   recipeId: number;
   initialIsFavourite: boolean;
@@ -40,6 +42,7 @@ export default function FavouriteButton({
 
   return (
     <button
+      className={`${styles.button} ${isFavourite ? styles.saved : ""}`}
       type="button"
       onClick={handleToggle}
       disabled={isPending}

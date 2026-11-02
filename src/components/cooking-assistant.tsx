@@ -4,6 +4,8 @@
 import { useState } from "react";
 import { useToast } from "@/components/toast-provider";
 
+import styles from "./cooking-assistant.module.scss";
+
 type Message = {
   id: number;
   role: "user" | "assistant";
@@ -86,8 +88,8 @@ export default function CookingAssistant({
   }
 
   return (
-    <section className="cooking-assistant">
-      <header className="cooking-assistant__header">
+    <section className={styles.assistant}>
+      <header className={styles.header}>
         <div>
           <h2>Cooking Assistant</h2>
           <p>
@@ -95,18 +97,18 @@ export default function CookingAssistant({
           </p>
         </div>
 
-        <span className="cooking-assistant__badge">
+        <span className={styles.badge}>
           Development mode
         </span>
       </header>
 
       <div
-        className="cooking-assistant__messages"
+        className={styles.messages}
         aria-live="polite"
         aria-label="Cooking assistant conversation"
       >
         {messages.length === 0 && (
-          <div className="cooking-assistant__empty">
+          <div className={styles.empty}>
             <p>What would you like to know about this recipe?</p>
 
             <p>
@@ -119,7 +121,9 @@ export default function CookingAssistant({
         {messages.map((message) => (
           <article
             key={message.id}
-            className={`cooking-assistant__message cooking-assistant__message--${message.role}`}
+            className={`${styles.message} ${
+              message.role === "user" ? styles.userMessage : styles.assistantMessage
+            }`}
           >
             <strong>
               {message.role === "user" ? "You" : "ChopLingo"}
@@ -134,14 +138,14 @@ export default function CookingAssistant({
         ))}
 
         {loading && (
-          <p className="cooking-assistant__loading">
+          <p className={styles.loading}>
             ChopLingo is preparing a response...
           </p>
         )}
       </div>
 
       <form
-        className="cooking-assistant__form"
+        className={styles.form}
         onSubmit={handleSubmit}
       >
         <label htmlFor="cooking-question">

@@ -3,6 +3,8 @@
 
 import { useState } from "react";
 
+import styles from "./serving-calculator.module.scss";
+
 type Ingredient = {
   name: string;
   quantity: number;
@@ -29,11 +31,15 @@ export default function ServingCalculator({
   }
 
   return (
-    <section aria-labelledby="ingredients-heading">
-      <h2 id="ingredients-heading">Ingredients</h2>
+    <section
+      aria-labelledby="ingredients-heading"
+      className={styles.calculator}
+    >
+      <h2 id="ingredients-heading" className={styles.heading}>Ingredients</h2>
 
-      <div>
+      <div className={styles.servingControl}>
         <button
+          className={styles.servingButton}
           type="button"
           onClick={() => setServings((current) => Math.max(1, current - 1))}
           disabled={servings <= 1}
@@ -42,11 +48,12 @@ export default function ServingCalculator({
           −
         </button>
 
-        <span aria-live="polite">
+        <span aria-live="polite" className={styles.servingCount}>
           {servings} servings
         </span>
 
         <button
+          className={styles.servingButton}
           type="button"
           onClick={() => setServings((current) => Math.min(100, current + 1))}
           disabled={servings >= 100}
@@ -56,9 +63,9 @@ export default function ServingCalculator({
         </button>
       </div>
 
-      <ul>
+      <ul className={styles.ingredientList}>
         {ingredients.map((ingredient) => (
-          <li key={ingredient.name}>
+          <li key={ingredient.name} className={styles.ingredient}>
             {scaleQuantity(ingredient.quantity)} {ingredient.unit}{" "}
             {ingredient.name}
             {ingredient.notes ? ` — ${ingredient.notes}` : ""}

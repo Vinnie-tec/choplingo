@@ -14,6 +14,8 @@ import { recipeFavourites } from "@/lib/db/schema/favourite";
 import RecipeList from "@/components/recipe-list";
 import Link from "next/link";
 
+import styles from "./page.module.scss";
+
 export const instant = false;
 
 export default async function FavouritesPage() {
@@ -57,24 +59,29 @@ export default async function FavouritesPage() {
   }));
 
   return (
-    <main>
-      <header>
-        <h1>My Favourite Recipes</h1>
-        <p>Your saved recipes, all in one place.</p>
-      </header>
+    <main className={styles.page}>
+      <div className={styles.container}>
+        <header className={styles.hero}>
+          <span aria-hidden="true" className={styles.eyebrow}>
+            Saved with love
+          </span>
+          <h1>My Favourite Recipes</h1>
+          <p>Your saved recipes, all in one place.</p>
+        </header>
 
-      {recipesWithFavourites.length > 0 ? (
-        <RecipeList recipes={recipesWithFavourites} />
-      ) : (
-        <section>
-          <h2>No favourites yet</h2>
-          <p>
-            Explore our recipes and save the ones you want
-            to cook later.
-          </p>
-          <Link href="/recipes">Explore recipes</Link>
-        </section>
-      )}
+        {recipesWithFavourites.length > 0 ? (
+          <RecipeList recipes={recipesWithFavourites} />
+        ) : (
+          <section aria-labelledby="empty-favourites-heading" className={styles.emptyState}>
+            <span aria-hidden="true" className={styles.heart}>♡</span>
+            <h2 id="empty-favourites-heading">No favourites yet</h2>
+            <p>
+              Explore our recipes and save the ones you want to cook later.
+            </p>
+            <Link href="/recipes">Explore recipes <span aria-hidden="true">→</span></Link>
+          </section>
+        )}
+      </div>
     </main>
   );
 }

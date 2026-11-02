@@ -66,14 +66,14 @@ export default function SiteNavClient({
         </Link>
 
         <nav aria-label="Main navigation" className={styles.nav}>
-          <Link className={styles.navLink} href="/#menu">
-            Discover
+          <Link className={styles.navLink} href="/recipes">
+            Recipes
+          </Link>
+          <Link className={styles.navLink} href="/#favourite">
+            My Favourites
           </Link>
           <Link className={styles.navLink} href="/#how-it-works">
             Our story
-          </Link>
-          <Link className={styles.navLink} href="/recipes">
-            Recipes
           </Link>
         </nav>
 
