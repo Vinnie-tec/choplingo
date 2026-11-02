@@ -5,6 +5,7 @@ import * as authSchema from "./schema/auth";
 import * as recipeSchema from "./schema/recipe";
 import * as favouriteSchema from "./schema/favourite";
 import * as reviewSchema from "./schema/review";
+import * as assistantRateLimitSchema from "./schema/assistant-rate-limit";
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -22,5 +23,6 @@ export const db = drizzle(pool, {
     ...authSchema,
     ...favouriteSchema,
     ...reviewSchema,
+    ...assistantRateLimitSchema,
   },
 });

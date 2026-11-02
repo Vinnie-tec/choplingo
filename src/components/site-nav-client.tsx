@@ -69,7 +69,7 @@ export default function SiteNavClient({
           <Link className={styles.navLink} href="/recipes">
             Recipes
           </Link>
-          <Link className={styles.navLink} href="/#favourite">
+          <Link className={styles.navLink} href="/favourites">
             My Favourites
           </Link>
           <Link className={styles.navLink} href="/#how-it-works">

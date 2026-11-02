@@ -22,6 +22,13 @@
       "when": 1793200069810,
       "tag": "0002_violet_reaper",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793630931217,
+      "tag": "0003_swift_iron_fist",
+      "breakpoints": true
     }
   ]
 }
