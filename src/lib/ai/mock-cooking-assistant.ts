@@ -1,68 +1,124 @@
 
+import type { RecipeStep } from "@/lib/db/schema/recipe";
+
+type RecipeContext = {
+  title: string;
+  description: string;
+  servings: number;
+  preparationMinutes: number;
+  cookingMinutes: number;
+  ingredients: {
+    name: string;
+    quantity: number;
+    unit: string;
+    notes: string | null;
+  }[];
+  instructions: RecipeStep[];
+};
+
 type MockCookingResponse = {
   answer: string;
   mode: "mock";
 };
 
-/**
- * Provides simulated cooking advice during development.
- *
- * This does NOT call an AI model. These responses are for
- * testing ChopLingo's backend and user interface without
- * spending money on API credits.
- */
 export function getMockCookingResponse(
   question: string,
-  recipeTitle: string,
+  recipe: RecipeContext,
 ): MockCookingResponse {
   const normalizedQuestion = question.toLowerCase();
 
+  const ingredientNames = recipe.ingredients
+    .map((ingredient) => ingredient.name.toLowerCase());
+
   let answer: string;
 
+  // Check whether the user is asking about a particular ingredient.
+  const mentionedIngredient = recipe.ingredients.find((ingredient) =>
+    normalizedQuestion.includes(ingredient.name.toLowerCase())
+  );
+
   if (
+    normalizedQuestion.includes("ingredient") ||
     normalizedQuestion.includes("substitute") ||
     normalizedQuestion.includes("instead of") ||
     normalizedQuestion.includes("replace")
   ) {
-    answer =
-      "Ingredient substitutions depend on the recipe. For example, " +
-      "you can omit crayfish if you don't have it, although the flavour " +
-      "will be different. Tell me the specific ingredient you want to " +
-      "replace for more targeted advice.";
+    const ingredients = recipe.ingredients
+      .map((ingredient) => {
+        return `${ingredient.quantity} ${ingredient.unit} ${ingredient.name}`;
+      })
+      .join(", ");
+
+    answer = mentionedIngredient
+      ? `${mentionedIngredient.name} is included in ${recipe.title}. ` +
+        `The recipe uses ${mentionedIngredient.quantity} ${mentionedIngredient.unit}. ` +
+        "A suitable replacement depends on the flavour and texture you want. " +
+        "If you tell me what ingredient you have available, I can help you compare options."
+      : `The ingredients for ${recipe.title} are: ${ingredients}. ` +
+        "Tell me which ingredient you want to replace so I can suggest an appropriate alternative.";
+  } else if (
+    normalizedQuestion.includes("instruction") ||
+    normalizedQuestion.includes("step") ||
+    normalizedQuestion.includes("how do i cook") ||
+    normalizedQuestion.includes("how to prepare")
+  ) {
+    answer = recipe.instructions
+      .map((step) => `${step.step}. ${step.instruction}`)
+      .join("\n\n");
   } else if (
     normalizedQuestion.includes("spicy") ||
     normalizedQuestion.includes("pepper")
   ) {
-    answer =
-      "To reduce the heat, use less scotch bonnet pepper and remove its " +
-      "seeds if appropriate. Add pepper gradually, taste as you cook, " +
-      "and remember that the other ingredients also affect the final flavour.";
+    const pepperIngredients = recipe.ingredients.filter((ingredient) =>
+      ingredient.name.toLowerCase().includes("pepper")
+    );
+
+    answer = pepperIngredients.length
+      ? `Your ${recipe.title} recipe includes ${pepperIngredients
+          .map((ingredient) => ingredient.name)
+          .join(", ")}. You can reduce the quantity to control the heat. ` +
+        "Add smaller amounts gradually and taste as you cook."
+      : `I couldn't find a pepper ingredient listed in ${recipe.title}. ` +
+        "You can still adjust any spicy ingredients you add, but check the recipe before making changes.";
   } else if (
     normalizedQuestion.includes("serving") ||
     normalizedQuestion.includes("servings") ||
     normalizedQuestion.includes("people") ||
     normalizedQuestion.includes("quantity")
   ) {
-    answer =
-      "Start by checking the recipe's original serving size. To serve " +
-      "more or fewer people, multiply each ingredient quantity by " +
-      "(your desired servings ÷ original servings). ChopLingo's serving " +
-      "calculator can help you adjust the quantities.";
+    answer = `${recipe.title} is originally designed to serve ${recipe.servings} people. ` +
+      "To adjust the quantities, multiply each ingredient by " +
+      "(your desired servings ÷ original servings). " +
+      "You can use ChopLingo's serving calculator to do this automatically.";
   } else if (
-    normalizedQuestion.includes("cook") ||
     normalizedQuestion.includes("time") ||
-    normalizedQuestion.includes("minutes")
+    normalizedQuestion.includes("long")
   ) {
-    answer =
-      "Cooking time depends on your equipment, heat level, and ingredient " +
-      "quantities. Follow the recipe's stated cooking time as a guide, " +
-      "check the food as it cooks, and make sure ingredients are fully cooked.";
+    answer = `For ${recipe.title}, preparation takes approximately ` +
+      `${recipe.preparationMinutes} minutes, while cooking takes ` +
+      `${recipe.cookingMinutes} minutes. ` +
+      `That's approximately ${recipe.preparationMinutes + recipe.cookingMinutes} minutes altogether.`;
+  } else if (
+    normalizedQuestion.includes("ingredient list") ||
+    normalizedQuestion.includes("what do i need") ||
+    normalizedQuestion.includes("what ingredients")
+  ) {
+    answer = `Here are the ingredients for ${recipe.title}:\n\n` +
+      recipe.ingredients
+        .map((ingredient) =>
+          `• ${ingredient.quantity} ${ingredient.unit} ${ingredient.name}`
+        )
+        .join("\n");
   } else {
-    answer =
-      `You're asking about ${recipeTitle}. During development, I'm using ` +
-      "simulated responses rather than a live AI model. Try asking about " +
-      "ingredient substitutions, reducing pepper, cooking time, or serving sizes.";
+    answer = `You're asking about ${recipe.title}.\n\n` +
+      `${recipe.description}\n\n` +
+      `This recipe serves ${recipe.servings} people and takes approximately ` +
+      `${recipe.preparationMinutes + recipe.cookingMinutes} minutes altogether.\n\n` +
+      "Try asking me about its ingredients, cooking instructions, preparation time, or serving quantities.";
   }
+
+  // Avoid unused-variable warnings if the ingredient list is empty.
+  void ingredientNames;
 
   return {
     answer,

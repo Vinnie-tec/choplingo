@@ -111,7 +111,7 @@ export async function POST(
     if (process.env.AI_MOCK_MODE === "true") {
       const mockResult = getMockCookingResponse(
         parsed.data.question,
-        recipe.title,
+        recipeContext,
       );
 
       return Response.json(mockResult);
