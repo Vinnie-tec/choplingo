@@ -97,9 +97,7 @@ export default function CookingAssistant({
           </p>
         </div>
 
-        <span className={styles.badge}>
-          Development mode
-        </span>
+        <span className={styles.badge}>Development mode</span>
       </header>
 
       <div
@@ -122,7 +120,9 @@ export default function CookingAssistant({
           <article
             key={message.id}
             className={`${styles.message} ${
-              message.role === "user" ? styles.userMessage : styles.assistantMessage
+              message.role === "user"
+                ? styles.userMessage
+                : styles.assistantMessage
             }`}
           >
             <strong>
@@ -144,13 +144,8 @@ export default function CookingAssistant({
         )}
       </div>
 
-      <form
-        className={styles.form}
-        onSubmit={handleSubmit}
-      >
-        <label htmlFor="cooking-question">
-          Ask a question
-        </label>
+      <form className={styles.form} onSubmit={handleSubmit}>
+        <label htmlFor="cooking-question">Ask a question</label>
 
         <textarea
           id="cooking-question"

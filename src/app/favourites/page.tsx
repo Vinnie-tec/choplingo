@@ -72,13 +72,18 @@ export default async function FavouritesPage() {
         {recipesWithFavourites.length > 0 ? (
           <RecipeList recipes={recipesWithFavourites} />
         ) : (
-          <section aria-labelledby="empty-favourites-heading" className={styles.emptyState}>
+          <section
+            aria-labelledby="empty-favourites-heading"
+            className={styles.emptyState}
+          >
             <span aria-hidden="true" className={styles.heart}>♡</span>
             <h2 id="empty-favourites-heading">No favourites yet</h2>
             <p>
               Explore our recipes and save the ones you want to cook later.
             </p>
-            <Link href="/recipes">Explore recipes <span aria-hidden="true">→</span></Link>
+            <Link href="/recipes">
+              Explore recipes <span aria-hidden="true">→</span>
+            </Link>
           </section>
         )}
       </div>
