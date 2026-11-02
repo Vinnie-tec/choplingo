@@ -10,6 +10,8 @@ import { recipes, categories } from "@/lib/db/schema/recipe";
 import RecipeList from "@/components/recipe-list";
 import { getUserFavouriteRecipeIds } from "@/lib/db/queries/favourites";
 
+import styles from "./page.module.scss";
+
 export const instant = false;
 
 export default async function RecipesPage() {
@@ -54,25 +56,32 @@ export default async function RecipesPage() {
   }));
 
   return (
-    <main>
-      <header>
-        <h1>Explore Nigerian Recipes</h1>
-        <p>
-          Welcome, {session.user.name}. Discover something delicious to cook.
-        </p>
-      </header>
-
-      {recipeList.length === 0 ? (
-        <section aria-labelledby="empty-recipes-heading">
-          <h2 id="empty-recipes-heading">Our recipe collection is growing</h2>
+    <main className={styles.page}>
+      <div className={styles.container}>
+        <header className={styles.hero}>
+          <h1>Explore Nigerian Recipes</h1>
           <p>
-            There are no recipes to explore just yet. Check back soon for
-            delicious Nigerian dishes.
+            Welcome, {session.user.name}. Discover something delicious to cook.
           </p>
-        </section>
-      ) : (
-        <RecipeList recipes={recipesWithFavourites} />
-      )}
+        </header>
+
+        {recipeList.length === 0 ? (
+          <section
+            aria-labelledby="empty-recipes-heading"
+            className={styles.emptyState}
+          >
+            <h2 id="empty-recipes-heading">
+              Our recipe collection is growing
+            </h2>
+            <p>
+              There are no recipes to explore just yet. Check back soon for
+              delicious Nigerian dishes.
+            </p>
+          </section>
+        ) : (
+          <RecipeList recipes={recipesWithFavourites} />
+        )}
+      </div>
     </main>
   );
 }

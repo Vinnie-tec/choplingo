@@ -16,6 +16,8 @@ import ReviewForm from "@/components/review-form";
 import { getRecipeReviews } from "@/lib/db/queries/reviews";
 import CookingAssistant from "@/components/cooking-assistant";
 
+import styles from "./page.module.scss";
+
 export const instant = false;
 
 type RecipeDetailPageProps = {
@@ -78,73 +80,82 @@ export default async function RecipeDetailPage({
 
   // 6. Render the recipe.
   return (
-    <main>
-      <header>
-        <p>{recipe.categoryName}</p>
-        <h1>{recipe.title}</h1>
-        <p>{recipe.description}</p>
-      </header>
+    <main className={styles.page}>
+      <div className={styles.container}>
+        <header className={styles.hero}>
+          <p className={styles.category}>{recipe.categoryName}</p>
+          <h1>{recipe.title}</h1>
+          <p className={styles.description}>{recipe.description}</p>
+        </header>
 
-      <section aria-label="Recipe information">
-        <p>Preparation: {recipe.preparationMinutes} minutes</p>
-        <p>Cooking: {recipe.cookingMinutes} minutes</p>
-        <p>Servings: {recipe.servings}</p>
-        <p>Difficulty: {recipe.difficulty}</p>
-      </section>
+        <section
+          aria-label="Recipe information"
+          className={styles.recipeFacts}
+        >
+          <p>Preparation: {recipe.preparationMinutes} minutes</p>
+          <p>Cooking: {recipe.cookingMinutes} minutes</p>
+          <p>Servings: {recipe.servings}</p>
+          <p>Difficulty: {recipe.difficulty}</p>
+        </section>
 
-      <ServingCalculator
-        originalServings={recipe.servings}
-        ingredients={recipeIngredientList}
-      />
+        <div className={styles.contentGrid}>
+          <div className={styles.ingredientsCard}>
+            <ServingCalculator
+              originalServings={recipe.servings}
+              ingredients={recipeIngredientList}
+            />
+          </div>
 
-      <section>
-        <h2>Preparation steps</h2>
+          <section className={styles.instructionsCard}>
+            <h2>Preparation steps</h2>
 
-        <ol>
-          {recipe.instructions.map((step) => (
-            <li key={step.step}>{step.instruction}</li>
+            <ol>
+              {recipe.instructions.map((step) => (
+                <li key={step.step}>{step.instruction}</li>
+              ))}
+            </ol>
+          </section>
+        </div>
+
+        <section className={styles.reviewFormCard}>
+          <h2>Rate this recipe</h2>
+          <ReviewForm
+            recipeId={recipe.id}
+            initialRating={reviewData.myReview?.rating ?? 0}
+            initialComment={reviewData.myReview?.comment ?? ""}
+          />
+        </section>
+
+        <section className={styles.reviewsCard}>
+          <h2>Reviews and ratings</h2>
+
+          <p className={styles.reviewSummary}>
+            {reviewData.totalReviews > 0
+              ? `★ ${reviewData.averageRating} / 5 (${reviewData.totalReviews} ${
+                  reviewData.totalReviews === 1 ? "review" : "reviews"
+                })`
+              : "No reviews yet. Be the first to review this recipe!"}
+          </p>
+
+          {reviewData.reviews.map((review) => (
+            <article key={review.id} className={styles.reviewCard}>
+              <h3>{review.reviewerName}</h3>
+              <p aria-label={`${review.rating} out of 5 stars`}>
+                {"★".repeat(review.rating)}
+                {"☆".repeat(5 - review.rating)}
+              </p>
+
+              {review.comment && <p>{review.comment}</p>}
+
+              <time dateTime={review.createdAt.toISOString()}>
+                {review.createdAt.toLocaleDateString()}
+              </time>
+            </article>
           ))}
-        </ol>
-      </section>
+        </section>
 
-      <section>
-        <h2>Rate this recipe</h2>
-        <ReviewForm
-          recipeId={recipe.id}
-          initialRating={reviewData.myReview?.rating ?? 0}
-          initialComment={reviewData.myReview?.comment ?? ""}
-        />
-      </section>
-
-      <section>
-        <h2>Reviews and ratings</h2>
-
-        <p>
-          {reviewData.totalReviews > 0
-            ? `★ ${reviewData.averageRating} / 5 (${reviewData.totalReviews} ${
-                reviewData.totalReviews === 1 ? "review" : "reviews"
-              })`
-            : "No reviews yet. Be the first to review this recipe!"}
-        </p>
-
-        {reviewData.reviews.map((review) => (
-          <article key={review.id}>
-            <h3>{review.reviewerName}</h3>
-            <p aria-label={`${review.rating} out of 5 stars`}>
-              {"★".repeat(review.rating)}
-              {"☆".repeat(5 - review.rating)}
-            </p>
-
-            {review.comment && <p>{review.comment}</p>}
-
-            <time dateTime={review.createdAt.toISOString()}>
-              {review.createdAt.toLocaleDateString()}
-            </time>
-          </article>
-        ))}
-      </section>
-
-      <CookingAssistant recipeId={recipe.id} recipeTitle={recipe.title} />
+        <CookingAssistant recipeId={recipe.id} recipeTitle={recipe.title} />
+      </div>
     </main>
   );
 }
