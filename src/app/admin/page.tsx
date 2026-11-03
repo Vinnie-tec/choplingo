@@ -21,11 +21,15 @@ export default async function AdminPage() {
   }
   return (
     <main>
-      <h1>ChopLingo Admin Dashboard</h1>
+      <h1>Dashboard Overview</h1>
 
-      <p>Welcome, {adminSession.session.user.name}</p>
-
-      <p>Administrator access granted.</p>
+      <section>
+        <h2>Welcome to ChopLingo Administration</h2>
+        <p>
+          Manage recipes, ingredients, categories and other cooking content from
+          one place.
+        </p>
+      </section>
     </main>
   );
 }
