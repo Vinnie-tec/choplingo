@@ -10,7 +10,7 @@ export const instant = false;
 
 export default async function AdminRecipesPage() {
   await connection();
-  
+
   const allRecipes = await db
     .select({
       id: recipes.id,
@@ -59,6 +59,9 @@ export default async function AdminRecipesPage() {
                 <td>{recipe.cookingMinutes} mins</td>
                 <td>
                   <Link href={`/recipes/${recipe.slug}`}>View</Link>
+                </td>
+                <td>
+                  <Link href={`/admin/recipes/${recipe.id}/edit`}>Edit</Link>
                 </td>
               </tr>
             ))}
