@@ -11,7 +11,18 @@ export const auth = betterAuth({
   // Enable email-and-password registration and login.
   emailAndPassword: {
     enabled: true,
-  },
+  }, 
+  
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "user",
+        input: false,
+      },
+    },
+    },
 
   // Better Auth reads this secret to protect authentication data.
   secret: process.env.BETTER_AUTH_SECRET,

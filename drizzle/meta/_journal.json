@@ -29,6 +29,13 @@
       "when": 1793630931217,
       "tag": "0003_swift_iron_fist",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793744450432,
+      "tag": "0004_overrated_frightful_four",
+      "breakpoints": true
     }
   ]
 }
