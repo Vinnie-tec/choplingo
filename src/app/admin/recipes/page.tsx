@@ -4,7 +4,9 @@ import Link from "next/link";
 import { desc, eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
+
 import { recipes, categories } from "@/lib/db/schema/recipe";
+import DeleteRecipeButton from "@/components/admin/delete-recipe-button";
 
 export const instant = false;
 
@@ -62,6 +64,12 @@ export default async function AdminRecipesPage() {
                 </td>
                 <td>
                   <Link href={`/admin/recipes/${recipe.id}/edit`}>Edit</Link>
+                </td>
+                <td>
+                  <DeleteRecipeButton
+                    recipeId={recipe.id}
+                    recipeTitle={recipe.title}
+                  />
                 </td>
               </tr>
             ))}

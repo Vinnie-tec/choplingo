@@ -309,3 +309,61 @@ export async function updateRecipe(recipeId: number, formData: unknown) {
     };
   }
 }
+
+
+export async function deleteRecipe(recipeId: number) {
+  // 1. Verify administrator permissions.
+  const admin = await requireAdmin();
+
+  if (!admin.authorized) {
+    return {
+      success: false,
+      message: "You are not authorised to delete recipes.",
+    };
+  }
+
+  // 2. Validate the recipe ID.
+  if (!Number.isSafeInteger(recipeId) || recipeId <= 0) {
+    return {
+      success: false,
+      message: "Invalid recipe ID.",
+    };
+  }
+
+  try {
+    // 3. Find and delete the recipe.
+    const [deletedRecipe] = await db
+      .delete(recipes)
+      .where(eq(recipes.id, recipeId))
+      .returning({
+        id: recipes.id,
+        slug: recipes.slug,
+      });
+
+    if (!deletedRecipe) {
+      return {
+        success: false,
+        message: "Recipe not found.",
+      };
+    }
+
+    // 4. Refresh pages affected by the deletion.
+    revalidatePath("/admin");
+    revalidatePath("/admin/recipes");
+    revalidatePath("/recipes");
+    revalidatePath("/favourites");
+    revalidatePath(`/recipes/${deletedRecipe.slug}`);
+
+    return {
+      success: true,
+      message: "Recipe deleted successfully.",
+    };
+  } catch (error) {
+    console.error("Delete recipe error:", error);
+
+    return {
+      success: false,
+      message: "Something went wrong while deleting the recipe.",
+    };
+  }
+}
