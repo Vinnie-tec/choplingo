@@ -9,24 +9,38 @@ import { auth } from "@/lib/auth";
  * Returns null for unauthenticated users
  * and ordinary users.
  */
+
 export async function getAdminSession(requestHeaders?: Headers) {
-  // Use supplied request headers when called from an API route.
-  // Otherwise, retrieve the current request headers.
   const currentHeaders = requestHeaders ?? await headers();
 
   const session = await auth.api.getSession({
     headers: currentHeaders,
   });
 
-  // No active session.
-  if (!session) {
-    return null;
-  }
-
-  // Authenticated, but not an administrator.
-  if (session.user.role !== "admin") {
-    return null;
-  }
-
   return session;
+}
+
+export async function requireAdmin(requestHeaders?: Headers) {
+  const session = await getAdminSession(requestHeaders);
+
+  // User is not authenticated.
+  if (!session) {
+    return {
+      authorized: false as const,
+      reason: "unauthenticated" as const,
+    };
+  }
+
+  // User is authenticated but lacks admin privileges.
+  if (session.user.role !== "admin") {
+    return {
+      authorized: false as const,
+      reason: "forbidden" as const,
+    };
+  }
+
+  return {
+    authorized: true as const,
+    session,
+  };
 }
