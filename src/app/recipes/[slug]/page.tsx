@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -53,10 +53,15 @@ export default async function RecipeDetailPage({
       instructions: recipes.instructions,
       imageUrl: recipes.imageUrl,
       categoryName: categories.name,
+      status: recipes.status,
     })
     .from(recipes)
     .innerJoin(categories, eq(recipes.categoryId, categories.id))
-    .where(eq(recipes.slug, slug))
+    .where(
+      session.user.role === "admin"
+        ? eq(recipes.slug, slug)
+        : and(eq(recipes.slug, slug), eq(recipes.status, "published")),
+    )
     .limit(1);
 
   // 4. Show Next.js's 404 page for an unknown recipe.
@@ -76,7 +81,10 @@ export default async function RecipeDetailPage({
     .innerJoin(ingredients, eq(recipeIngredients.ingredientId, ingredients.id))
     .where(eq(recipeIngredients.recipeId, recipe.id));
 
-  const reviewData = await getRecipeReviews(recipe.id, session.user.id);
+  const reviewData =
+    recipe.status === "published"
+      ? await getRecipeReviews(recipe.id, session.user.id)
+      : null;
 
   // 6. Render the recipe.
   return (
@@ -88,10 +96,16 @@ export default async function RecipeDetailPage({
           <p className={styles.description}>{recipe.description}</p>
         </header>
 
-        <section
-          aria-label="Recipe information"
-          className={styles.recipeFacts}
-        >
+        {recipe.status === "draft" && (
+          <div role="status">
+            <strong>Draft preview</strong>
+            <p>
+              This recipe is not published. Only administrators can view it.
+            </p>
+          </div>
+        )}
+
+        <section aria-label="Recipe information" className={styles.recipeFacts}>
           <p>Preparation: {recipe.preparationMinutes} minutes</p>
           <p>Cooking: {recipe.cookingMinutes} minutes</p>
           <p>Servings: {recipe.servings}</p>
@@ -116,46 +130,49 @@ export default async function RecipeDetailPage({
             </ol>
           </section>
         </div>
-
-        <section className={styles.reviewFormCard}>
-          <h2>Rate this recipe</h2>
-          <ReviewForm
-            recipeId={recipe.id}
-            initialRating={reviewData.myReview?.rating ?? 0}
-            initialComment={reviewData.myReview?.comment ?? ""}
-          />
-        </section>
-
-        <section className={styles.reviewsCard}>
-          <h2>Reviews and ratings</h2>
-
-          <p className={styles.reviewSummary}>
-            {reviewData.totalReviews > 0
-              ? `★ ${reviewData.averageRating} / 5 (${reviewData.totalReviews} ${
-                  reviewData.totalReviews === 1 ? "review" : "reviews"
-                })`
-              : "No reviews yet. Be the first to review this recipe!"}
-          </p>
-
-          {reviewData.reviews.map((review) => (
-            <article key={review.id} className={styles.reviewCard}>
-              <h3>{review.reviewerName}</h3>
-              <p aria-label={`${review.rating} out of 5 stars`}>
-                {"★".repeat(review.rating)}
-                {"☆".repeat(5 - review.rating)}
-              </p>
-
-              {review.comment && <p>{review.comment}</p>}
-
-              <time dateTime={review.createdAt.toISOString()}>
-                {review.createdAt.toLocaleDateString()}
-              </time>
-            </article>
-          ))}
-        </section>
-
-        <CookingAssistant recipeId={recipe.id} recipeTitle={recipe.title} />
       </div>
+      {recipe.status === "published" && reviewData && (
+        <>
+          <section className={styles.reviewFormCard}>
+            <h2>Rate this recipe</h2>
+            <ReviewForm
+              recipeId={recipe.id}
+              initialRating={reviewData.myReview?.rating ?? 0}
+              initialComment={reviewData.myReview?.comment ?? ""}
+            />
+          </section>
+
+          <section className={styles.reviewsCard}>
+            <h2>Reviews and ratings</h2>
+
+            <p className={styles.reviewSummary}>
+              {reviewData.totalReviews > 0
+                ? `★ ${reviewData.averageRating} / 5 (${reviewData.totalReviews} ${
+                    reviewData.totalReviews === 1 ? "review" : "reviews"
+                  })`
+                : "No reviews yet. Be the first to review this recipe!"}
+            </p>
+
+            {reviewData.reviews.map((review) => (
+              <article key={review.id} className={styles.reviewCard}>
+                <h3>{review.reviewerName}</h3>
+                <p aria-label={`${review.rating} out of 5 stars`}>
+                  {"★".repeat(review.rating)}
+                  {"☆".repeat(5 - review.rating)}
+                </p>
+
+                {review.comment && <p>{review.comment}</p>}
+
+                <time dateTime={review.createdAt.toISOString()}>
+                  {review.createdAt.toLocaleDateString()}
+                </time>
+              </article>
+            ))}
+          </section>
+
+          <CookingAssistant recipeId={recipe.id} recipeTitle={recipe.title} />
+        </>
+      )}
     </main>
   );
 }

@@ -40,31 +40,6 @@ export async function POST(
       );
     }
 
-    // Check how many assistant requests this user has made.
-    const rateLimit = await checkAssistantRateLimit(session.user.id);
-
-    if (!rateLimit.allowed) {
-      return Response.json(
-        {
-          error:
-            "You've reached your cooking assistant request limit. Please try again shortly.",
-          remaining: rateLimit.remaining,
-          resetAt: rateLimit.resetAt,
-        },
-        {
-          status: 429,
-          headers: {
-            "Retry-After": String(
-              Math.max(
-                1,
-                Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000),
-              ),
-            ),
-          },
-        },
-      );
-    }
-
     // 2. Validate the recipe ID from the URL.
     const { id } = await params;
     const recipeId = Number(id);
@@ -98,6 +73,7 @@ export async function POST(
         preparationMinutes: recipes.preparationMinutes,
         cookingMinutes: recipes.cookingMinutes,
         instructions: recipes.instructions,
+        status: recipes.status,
       })
       .from(recipes)
       .where(eq(recipes.id, recipeId))
@@ -105,6 +81,40 @@ export async function POST(
 
     if (!recipe) {
       return Response.json({ error: "Recipe not found." }, { status: 404 });
+    }
+
+    if (recipe.status !== "published") {
+      return Response.json(
+        {
+          error:
+            "The cooking assistant is unavailable for unpublished recipes.",
+        },
+        { status: 404 },
+      );
+    }
+
+    const rateLimit = await checkAssistantRateLimit(session.user.id);
+
+    if (!rateLimit.allowed) {
+      return Response.json(
+        {
+          error:
+            "You've reached your cooking assistant request limit. Please try again shortly.",
+          remaining: rateLimit.remaining,
+          resetAt: rateLimit.resetAt,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(
+              Math.max(
+                1,
+                Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000),
+              ),
+            ),
+          },
+        },
+      );
     }
 
     // 5. Fetch the recipe's ingredients.

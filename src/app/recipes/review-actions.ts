@@ -1,4 +1,3 @@
-
 "use server";
 
 import { headers } from "next/headers";
@@ -27,13 +26,11 @@ type ReviewResult = {
   message: string;
 };
 
-export async function submitReview(
-  input: {
-    recipeId: number;
-    rating: number;
-    comment?: string;
-  },
-): Promise<ReviewResult> {
+export async function submitReview(input: {
+  recipeId: number;
+  rating: number;
+  comment?: string;
+}): Promise<ReviewResult> {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -58,7 +55,11 @@ export async function submitReview(
 
   try {
     const [recipe] = await db
-      .select({ id: recipes.id, slug: recipes.slug })
+      .select({
+        id: recipes.id,
+        slug: recipes.slug,
+        status: recipes.status,
+      })
       .from(recipes)
       .where(eq(recipes.id, recipeId))
       .limit(1);
@@ -67,6 +68,13 @@ export async function submitReview(
       return {
         success: false,
         message: "Recipe not found.",
+      };
+    }
+
+    if (recipe.status !== "published") {
+      return {
+        success: false,
+        message: "You cannot review an unpublished recipe.",
       };
     }
 
