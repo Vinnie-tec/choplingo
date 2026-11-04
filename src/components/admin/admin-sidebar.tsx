@@ -22,6 +22,10 @@ const adminLinks = [
     label: "Ingredients",
     href: "/admin/ingredients",
   },
+  {
+    label: "Reviews",
+    href: "/admin/reviews",
+  },
 ];
 
 export default function AdminSidebar() {
