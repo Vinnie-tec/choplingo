@@ -1,13 +1,15 @@
 "use server";
 
-import { and, eq, ne } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-
-import { db } from "@/lib/db";
-import { categories } from "@/lib/db/schema/recipe";
-import { requireAdmin } from "@/lib/admin-auth";
 import { createCategorySchema } from "@/lib/validators/category";
 import { updateCategorySchema } from "@/lib/validators/category";
+
+import { and, eq, ne, count } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { categories, recipes } from "@/lib/db/schema/recipe";
+import { requireAdmin } from "@/lib/admin-auth";
+import { revalidatePath } from "next/cache";
+
+import { z } from "zod";
 
 export async function createCategory(input: unknown) {
   // 1. Verify admin authorization.
@@ -175,6 +177,73 @@ export async function updateCategory(input: unknown) {
     return {
       success: false,
       message: "We couldn't update the category. Please try again.",
+    };
+  }
+}
+
+export async function deleteCategory(categoryId: unknown) {
+  // 1. Only administrators can delete categories.
+  const admin = await requireAdmin();
+
+  if (!admin.authorized) {
+    return {
+      success: false,
+      message: "You are not authorized to perform this action.",
+    };
+  }
+
+  // 2. Validate the category ID.
+  const parsedId = z.coerce.number().int().positive().safeParse(categoryId);
+
+  if (!parsedId.success) {
+    return {
+      success: false,
+      message: "Invalid category ID.",
+    };
+  }
+
+  try {
+    // 3. Check whether recipes still use this category.
+    const [result] = await db
+      .select({ total: count() })
+      .from(recipes)
+      .where(eq(recipes.categoryId, parsedId.data));
+
+    if (result.total > 0) {
+      return {
+        success: false,
+        message: `Cannot delete this category because it contains ${result.total} recipe(s). Reassign those recipes first.`,
+      };
+    }
+
+    // 4. Delete the category.
+    const [deletedCategory] = await db
+      .delete(categories)
+      .where(eq(categories.id, parsedId.data))
+      .returning({ id: categories.id });
+
+    if (!deletedCategory) {
+      return {
+        success: false,
+        message: "Category not found.",
+      };
+    }
+
+    // 5. Refresh affected pages.
+    revalidatePath("/admin/categories");
+    revalidatePath("/admin/recipes/new");
+    revalidatePath("/recipes");
+
+    return {
+      success: true,
+      message: "Category deleted successfully.",
+    };
+  } catch (error) {
+    console.error("Delete category error:", error);
+
+    return {
+      success: false,
+      message: "Unable to delete category. Please try again.",
     };
   }
 }

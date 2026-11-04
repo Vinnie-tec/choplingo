@@ -5,6 +5,8 @@ import { asc, count, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { categories, recipes } from "@/lib/db/schema/recipe";
 
+import DeleteCategoryButton from "@/components/admin/delete-category-button";
+
 export const instant = false;
 
 export default async function AdminCategoriesPage() {
@@ -59,6 +61,11 @@ export default async function AdminCategoriesPage() {
                   <Link href={`/admin/categories/${category.id}/edit`}>
                     Edit
                   </Link>
+
+                  <DeleteCategoryButton
+                    categoryId={category.id}
+                    categoryName={category.name}
+                  />
                 </td>
               </tr>
             ))}
