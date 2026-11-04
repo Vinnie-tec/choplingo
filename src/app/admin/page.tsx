@@ -151,8 +151,19 @@ export default async function AdminPage() {
         </div>
         <div className={styles.welcomeArt} aria-hidden="true">
           <span className={styles.artHalo} />
-          <span className={styles.artPlate}>😎</span>
-          <span className={styles.artSparkle}>😘</span>
+          <span className={styles.artPlate}>
+            <svg viewBox="0 0 120 120" fill="none">
+              <circle cx="60" cy="60" r="44" />
+              <circle cx="60" cy="60" r="34" />
+              <path d="M37 64c8-13 17-17 26-11 7 5 13 3 21-7" />
+              <path d="M42 75c10 6 25 7 37-1" />
+              <circle cx="46" cy="48" r="3" />
+              <circle cx="73" cy="46" r="3" />
+              <path d="M54 39c-2-5 0-8 4-10m8 11c0-5 3-7 7-8" />
+            </svg>
+          </span>
+          <span className={styles.artSparkle}>🎨</span>
+          <span className={styles.artSparkleSecondary}>🎁</span>
         </div>
       </section>
 
