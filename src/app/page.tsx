@@ -1,4 +1,6 @@
 
+
+import Link from "next/link";
 import styles from "./page.module.scss";
 
 export default function Home() {
@@ -21,9 +23,9 @@ export default function Home() {
               makes eating well the easiest part of your day.
             </p>
             <div className={styles.heroActions}>
-              <a className={styles.primaryButton} href="#menu">
+              <Link className={styles.primaryButton} href="#menu">
                 Find your flavour <span aria-hidden="true">→</span>
-              </a>
+              </Link>
               <a className={styles.secondaryButton} href="#how-it-works">
                 <span aria-hidden="true" className={styles.playIcon}>▶</span>
                 Our little story
@@ -87,7 +89,7 @@ export default function Home() {
               <span className={styles.sectionEyebrow}>A taste of the good stuff</span>
               <h2 id="menu-title">Fresh picks, <span>just for you.</span></h2>
             </div>
-            <a className={styles.textLink} href="#reviews">
+            <a className={styles.textLink} href="/reviews">
               See what people love <span aria-hidden="true">→</span>
             </a>
           </div>
@@ -126,7 +128,7 @@ export default function Home() {
         </section>
 
         <footer className={styles.footer}>
-          <a aria-label="ChopLingo home" className={styles.brand} href="#">
+          <Link aria-label="ChopLingo home" className={styles.brand} href="/">
             <span aria-hidden="true" className={styles.brandMark}>
               <svg viewBox="0 0 32 32">
                 <path d="M5 17h22c-.7 6.1-4.9 10-11 10S5.7 23.1 5 17Z" />
@@ -134,7 +136,7 @@ export default function Home() {
               </svg>
             </span>
             <span>chop<span className={styles.brandAccent}>lingo</span></span>
-          </a>
+          </Link>
           <p>Made for good days and really good food.</p>
           <span>© 2026 ChopLingo</span>
         </footer>

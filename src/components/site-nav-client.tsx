@@ -20,6 +20,7 @@ export default function SiteNavClient({
   const pathname = usePathname();
   const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const activeSection =
     pathname === "/recipes" || pathname.startsWith("/recipes/")
       ? "/recipes"
@@ -74,77 +75,100 @@ export default function SiteNavClient({
           </span>
         </Link>
 
-        <nav aria-label="Main navigation" className={styles.nav}>
-          <Link
-            aria-current={activeSection === "/recipes" ? "page" : undefined}
-            className={`${styles.navLink} ${
-              activeSection === "/recipes" ? styles.navLinkActive : ""
-            }`}
-            href="/recipes"
-          >
-            Recipes
-          </Link>
-          <Link
-            aria-current={activeSection === "/favourites" ? "page" : undefined}
-            className={`${styles.navLink} ${
-              activeSection === "/favourites" ? styles.navLinkActive : ""
-            }`}
-            href="/favourites"
-          >
-            My Favourites
-          </Link>
-          <Link
-            aria-current={activeSection === "/admin" ? "page" : undefined}
-            className={`${styles.navLink} ${
-              activeSection === "/admin" ? styles.navLinkActive : ""
-            }`}
-            href="/admin"
-          >
-            AdminHub
-          </Link>
-        </nav>
+        <button
+          aria-controls="site-navigation-panel"
+          aria-expanded={isMenuOpen}
+          aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          className={styles.menuButton}
+          onClick={() => setIsMenuOpen((open) => !open)}
+          type="button"
+        >
+          <span />
+          <span />
+          <span />
+        </button>
 
-        <div className={styles.actions}>
-          <ThemeToggle />
-          {isPending && !initialSession ? (
-            <div
-              aria-busy="true"
-              aria-label="Checking your account"
-              className={styles.authLoading}
-              role="status"
+        <div
+          className={`${styles.menuPanel} ${
+            isMenuOpen ? styles.menuPanelOpen : ""
+          }`}
+          id="site-navigation-panel"
+        >
+          <nav aria-label="Main navigation" className={styles.nav}>
+            <Link
+              aria-current={activeSection === "/recipes" ? "page" : undefined}
+              className={`${styles.navLink} ${
+                activeSection === "/recipes" ? styles.navLinkActive : ""
+              }`}
+              href="/recipes"
+              onClick={() => setIsMenuOpen(false)}
             >
-              <span className={styles.loadingGreeting} />
-              <span className={styles.loadingButton} />
-              <span className={styles.loadingButtonPrimary} />
-            </div>
-          ) : (
-            <>
-              {user && (
-                <span className={styles.greeting}>
-                  Hi <strong>{user.name.trim()}</strong>
-                </span>
-              )}
-              {user ? (
-                <button
-                  className={styles.authButton}
-                  onClick={handleSignOut}
-                  type="button"
-                  disabled={isSigningOut}
-                >
-                  {isSigningOut ? "Signing out..." : "Sign out"}
-                </button>
-              ) : (
-                <>
-                  <Link className={styles.authButton} href="/login">
-                    Sign in
-                  </Link>
-                  <Link className={styles.primaryButton} href="/register">
-                    Get started <span aria-hidden="true">↗</span>
-                  </Link>
-                </>
-              )}
-            </>
-          )}
+              Recipes
+            </Link>
+            <Link
+              aria-current={activeSection === "/favourites" ? "page" : undefined}
+              className={`${styles.navLink} ${
+                activeSection === "/favourites" ? styles.navLinkActive : ""
+              }`}
+              href="/favourites"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              My Favourites
+            </Link>
+            <Link
+              aria-current={activeSection === "/admin" ? "page" : undefined}
+              className={`${styles.navLink} ${
+                activeSection === "/admin" ? styles.navLinkActive : ""
+              }`}
+              href="/admin"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              AdminHub
+            </Link>
+          </nav>
+
+          <div className={styles.actions}>
+            <ThemeToggle />
+            {isPending && !initialSession ? (
+              <div
+                aria-busy="true"
+                aria-label="Checking your account"
+                className={styles.authLoading}
+                role="status"
+              >
+                <span className={styles.loadingGreeting} />
+                <span className={styles.loadingButton} />
+                <span className={styles.loadingButtonPrimary} />
+              </div>
+            ) : (
+              <>
+                {user && (
+                  <span className={styles.greeting}>
+                    Hi <strong>{user.name.trim()}</strong>
+                  </span>
+                )}
+                {user ? (
+                  <button
+                    className={styles.authButton}
+                    onClick={handleSignOut}
+                    type="button"
+                    disabled={isSigningOut}
+                  >
+                    {isSigningOut ? "Signing out..." : "Sign out"}
+                  </button>
+                ) : (
+                  <>
+                    <Link className={styles.authButton} href="/login">
+                      Sign in
+                    </Link>
+                    <Link className={styles.primaryButton} href="/register">
+                      Get started <span aria-hidden="true">↗</span>
+                    </Link>
+                  </>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>
