@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useSyncExternalStore } from "react";
+
 import styles from "./admin-sidebar.module.scss";
 
 const adminLinks = [
@@ -26,10 +28,24 @@ const adminLinks = [
     label: "Reviews",
     href: "/admin/reviews",
   },
+  {
+    label: "Users",
+    href: "/admin/users",
+  },
 ];
+
+function useMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+
+  const mounted = useMounted();
 
   return (
     <aside className={styles.sidebar}>
@@ -55,8 +71,10 @@ export default function AdminSidebar() {
             key={link.href}
             href={link.href}
             aria-current={
-              pathname === link.href ||
-              (link.href !== "/admin" && pathname.startsWith(`${link.href}/`))
+              mounted &&
+              (pathname === link.href ||
+                (link.href !== "/admin" &&
+                  pathname.startsWith(`${link.href}/`)))
                 ? "page"
                 : undefined
             }
