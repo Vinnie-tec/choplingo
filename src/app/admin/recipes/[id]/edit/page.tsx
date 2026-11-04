@@ -11,6 +11,8 @@ import {
 } from "@/lib/db/schema/recipe";
 
 import RecipeForm from "@/components/admin/recipe-form";
+import Link from "next/link";
+import styles from "../../../admin.module.scss";
 
 export const instant = false;
 
@@ -68,16 +70,30 @@ export default async function EditRecipePage({ params }: EditRecipePageProps) {
     ? (recipe.difficulty as (typeof validDifficulties)[number])
     : "medium";
 
+  const status: "draft" | "published" =
+    recipe.status === "published" ? "published" : "draft";
+
   const initialData = {
     ...recipe,
     difficulty,
+    status,
     ingredients: recipeIngredientList,
   };
 
   return (
-    <main>
-      <h1>Edit Recipe: {recipe.title}</h1>
-
+    <main className={styles.page}>
+      <div className={styles.pageHeading}>
+        <div>
+          <p className={styles.eyebrow}>REFINE YOUR RECIPE</p>
+          <h1>Edit recipe</h1>
+          <p className={styles.subtitle}>
+            Update the details for <strong>{recipe.title}</strong>.
+          </p>
+        </div>
+        <Link className={styles.secondaryButton} href="/admin/recipes">
+          <span aria-hidden="true">←</span> Back to recipes
+        </Link>
+      </div>
       <RecipeForm categories={allCategories} initialData={initialData} />
     </main>
   );

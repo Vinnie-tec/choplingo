@@ -1,0 +1,435 @@
+.listSection {
+  overflow: hidden;
+  border: 1px solid var(--color-glass-border);
+  border-radius: 22px;
+  background: var(--color-glass);
+  box-shadow: 0 16px 42px var(--color-shadow);
+  backdrop-filter: blur(16px);
+}
+
+.toolbar {
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filterLabel {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.filterSelect {
+  min-height: 36px;
+  padding: 0 30px 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 11px;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.resultCount {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 10px;
+
+  strong {
+    color: var(--color-text);
+  }
+}
+
+.tableScroller {
+  overflow-x: auto;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.recipeTable {
+  width: 100%;
+  min-width: 880px;
+  border-collapse: collapse;
+  text-align: left;
+
+  th {
+    height: 42px;
+    padding: 0 13px;
+    background: rgba(127, 106, 88, 0.035);
+    color: var(--color-text-muted);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    &:first-child {
+      padding-left: 19px;
+    }
+  }
+
+  td {
+    height: 69px;
+    padding: 9px 13px;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    transition: background 150ms ease;
+
+    &:hover {
+      background: rgba(242, 123, 53, 0.035);
+    }
+
+    &[aria-busy="true"] {
+      opacity: 0.62;
+    }
+  }
+
+  td:first-child {
+    min-width: 210px;
+    padding-left: 19px;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 18px;
+  }
+}
+
+.recipeCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.recipeMark {
+  display: grid;
+  width: 35px;
+  height: 35px;
+  flex: 0 0 35px;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: linear-gradient(145deg, var(--color-background-secondary), var(--color-brand-soft));
+  color: var(--color-brand-strong);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.recipeCell > div {
+  display: grid;
+  gap: 4px;
+}
+
+.recipeTitle {
+  max-width: 200px;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 11px;
+  text-overflow: ellipsis;
+}
+
+.recipeSlug {
+  max-width: 190px;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 9px;
+  text-overflow: ellipsis;
+}
+
+.difficulty {
+  display: inline-flex;
+  min-height: 23px;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--color-background-secondary);
+  color: var(--color-text-muted);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.easy {
+  background: rgba(98, 167, 118, 0.13);
+  color: #3e8b56;
+}
+
+.medium {
+  background: rgba(242, 184, 75, 0.17);
+  color: #a56a11;
+}
+
+.hard {
+  background: rgba(220, 91, 77, 0.13);
+  color: #bd4d3e;
+}
+
+.status {
+  display: inline-flex;
+  min-height: 25px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.published {
+  background: rgba(98, 167, 118, 0.13);
+  color: #3e8b56;
+}
+
+.draft {
+  background: rgba(127, 106, 88, 0.1);
+  color: var(--color-text-muted);
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actionLink,
+.viewLink,
+.statusButton,
+.deleteButton {
+  display: inline-flex;
+  min-height: 29px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 9px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 700;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.actionLink,
+.viewLink {
+  &:hover {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+}
+
+.statusButton {
+  border-color: rgba(242, 123, 53, 0.22);
+  background: var(--color-brand-soft);
+  color: var(--color-brand-strong);
+
+  &:hover:not(:disabled) {
+    border-color: var(--color-brand);
+  }
+}
+
+.deleteButton {
+  color: #c45043;
+
+  &:hover:not(:disabled) {
+    background: rgba(220, 91, 77, 0.1);
+  }
+}
+
+.statusButton:disabled,
+.deleteButton:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.emptyState {
+  display: grid;
+  justify-items: center;
+  padding: 46px 22px;
+  text-align: center;
+
+  h2 {
+    margin: 14px 0 0;
+    color: var(--color-text);
+    font-size: 16px;
+    letter-spacing: -0.45px;
+  }
+
+  p {
+    max-width: 370px;
+    margin: 8px 0 0;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    line-height: 1.7;
+  }
+}
+
+.emptyIcon {
+  display: grid;
+  width: 45px;
+  height: 45px;
+  place-items: center;
+  border-radius: 15px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  font-size: 19px;
+}
+
+.emptyAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 17px;
+  color: var(--color-brand-strong);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.dialogBackdrop {
+  position: fixed;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(27, 21, 17, 0.42);
+  inset: 0;
+  backdrop-filter: blur(7px);
+}
+
+.dialog {
+  width: min(100%, 410px);
+  padding: 29px;
+  border: 1px solid var(--color-glass-border);
+  border-radius: 25px;
+  background: var(--color-surface-raised);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
+  text-align: center;
+  backdrop-filter: blur(24px);
+
+  h2 {
+    margin: 9px 0 0;
+    color: var(--color-text);
+    font-size: 21px;
+    letter-spacing: -0.8px;
+    overflow-wrap: anywhere;
+  }
+
+  > p:not(.dialogEyebrow) {
+    margin: 10px 0 0;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    line-height: 1.7;
+  }
+}
+
+.dialogIcon {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  place-items: center;
+  margin: 0 auto 13px;
+  border-radius: 15px;
+  background: rgba(220, 91, 77, 0.12);
+  color: #c45043;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+.dialogEyebrow {
+  margin: 0;
+  color: #c45043;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 22px;
+
+  button {
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 700;
+
+    &:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+  }
+}
+
+.cancelButton {
+  border: 1px solid var(--color-border);
+  background: var(--color-glass);
+  color: var(--color-text);
+}
+
+.confirmDeleteButton {
+  border: 1px solid transparent;
+  background: #c94f42;
+  color: #fff;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 560px) {
+  .listSection {
+    border-radius: 18px;
+  }
+
+  .toolbar {
+    min-height: 60px;
+    padding: 10px 13px;
+  }
+
+  .filterGroup {
+    gap: 7px;
+  }
+
+  .resultCount {
+    font-size: 9px;
+  }
+
+  .dialog {
+    padding: 25px 20px;
+    border-radius: 21px;
+  }
+}

@@ -1,82 +1,79 @@
-
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { deleteRecipe } from "@/app/admin/recipes/actions";
-import { useToast } from "@/components/toast-provider";
+import styles from "./recipe-list.module.scss";
 
 type DeleteRecipeButtonProps = {
   recipeId: number;
   recipeTitle: string;
+  isPending: boolean;
+  disabled: boolean;
+  onConfirm: () => void;
 };
 
 export default function DeleteRecipeButton({
   recipeId,
   recipeTitle,
+  isPending,
+  disabled,
+  onConfirm,
 }: DeleteRecipeButtonProps) {
-  const router = useRouter();
-  const { showToast } = useToast();
-
-  const [isPending, startTransition] = useTransition();
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  function handleDelete() {
-    startTransition(async () => {
-      const result = await deleteRecipe(recipeId);
-
-      if (!result.success) {
-        showToast(result.message, "error");
-        setShowConfirmation(false);
-        return;
-      }
-
-      showToast(result.message, "success");
-      setShowConfirmation(false);
-
-      router.refresh();
-    });
+  function handleConfirm() {
+    setShowConfirmation(false);
+    onConfirm();
   }
 
   return (
-    <div>
+    <>
       <button
+        className={styles.deleteButton}
         type="button"
         onClick={() => setShowConfirmation(true)}
-        disabled={isPending}
+        disabled={disabled}
       >
         Delete
       </button>
 
       {showConfirmation && (
-        <div role="alertdialog" aria-labelledby={`delete-title-${recipeId}`}>
-          <h3 id={`delete-title-${recipeId}`}>
-            Delete {recipeTitle}?
-          </h3>
-
-          <p>
-            This action cannot be undone. The recipe, its reviews,
-            and its favourites will be permanently deleted.
-          </p>
-
-          <button
-            type="button"
-            onClick={() => setShowConfirmation(false)}
-            disabled={isPending}
+        <div className={styles.dialogBackdrop}>
+          <div
+            className={styles.dialog}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby={`delete-title-${recipeId}`}
+            aria-describedby={`delete-description-${recipeId}`}
           >
-            Cancel
-          </button>
-
-          <button
-            type="button"
-            onClick={handleDelete}
-            disabled={isPending}
-          >
-            {isPending ? "Deleting..." : "Confirm Delete"}
-          </button>
+            <span className={styles.dialogIcon} aria-hidden="true">!</span>
+            <p className={styles.dialogEyebrow}>REMOVE RECIPE</p>
+            <h2 id={`delete-title-${recipeId}`}>Delete {recipeTitle}?</h2>
+            <p id={`delete-description-${recipeId}`}>
+              This cannot be undone. The recipe, its reviews, and its favourites
+              will be permanently deleted.
+            </p>
+            <div className={styles.dialogActions}>
+              <button
+                className={styles.cancelButton}
+                type="button"
+                onClick={() => setShowConfirmation(false)}
+                disabled={isPending}
+              >
+                Keep recipe
+              </button>
+              <button
+                className={styles.confirmDeleteButton}
+                type="button"
+                onClick={handleConfirm}
+                disabled={isPending}
+              >
+                {isPending ? "Deleting…" : "Delete recipe"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

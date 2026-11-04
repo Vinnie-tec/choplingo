@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
 import AdminSidebar from "@/components/admin/admin-sidebar";
 import AdminHeader from "@/components/admin/admin-header";
+import styles from "./admin.module.scss";
 
 export const instant = false;
 
@@ -26,12 +27,11 @@ export default async function AdminLayout({
   }
 
   return (
-    <div>
+    <div className={styles.shell}>
       <AdminSidebar />
-      
-      <div>
+      <div className={styles.workspace}>
         <AdminHeader adminName={result.session.user.name} />
-        {children}
+        <div className={styles.content}>{children}</div>
       </div>
     </div>
   );
