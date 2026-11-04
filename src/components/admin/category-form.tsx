@@ -8,6 +8,7 @@ import { useToast } from "@/components/toast-provider";
 
 import type { categories } from "@/lib/db/schema/recipe";
 import { updateCategory } from "@/app/admin/categories/actions";
+import styles from "./category-form.module.scss";
 
 type Category = typeof categories.$inferSelect;
 
@@ -73,64 +74,105 @@ export default function CategoryForm({ category }: CategoryFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="name">Category Name</label>
+    <form className={styles.form} onSubmit={handleSubmit}>
+      <div className={styles.formCard}>
+        <div className={styles.formIntro}>
+          <span className={styles.formIcon} aria-hidden="true">🎨</span>
+          <div>
+            <h2>{isEditing ? "Category details" : "Make it memorable"}</h2>
+            <p>
+              {isEditing
+                ? "Keep the details clear so people can find the right recipes."
+                : "A good category name makes it easy to find the perfect dish."}
+            </p>
+          </div>
+        </div>
 
-        <input
-          id="name"
-          name="name"
-          type="text"
-          value={name}
-          onChange={(event) => handleNameChange(event.target.value)}
-          placeholder="e.g. Rice Dishes"
-          required
-          maxLength={100}
-          disabled={isPending}
-        />
+        <div className={styles.fields}>
+          <div className={styles.field}>
+            <label htmlFor="name">Category name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              value={name}
+              onChange={(event) => handleNameChange(event.target.value)}
+              placeholder="e.g. Rice dishes"
+              required
+              maxLength={100}
+              disabled={isPending}
+              autoComplete="off"
+            />
+            <small>A short, recognisable name for this collection.</small>
+          </div>
+
+          <div className={styles.field}>
+            <label htmlFor="slug">URL slug</label>
+            <div className={styles.slugInput}>
+              <span aria-hidden="true">/</span>
+              <input
+                id="slug"
+                name="slug"
+                type="text"
+                value={slug}
+                onChange={(event) => setSlug(generateSlug(event.target.value))}
+                placeholder="rice-dishes"
+                required
+                maxLength={120}
+                disabled={isPending}
+                autoComplete="off"
+                spellCheck={false}
+              />
+            </div>
+            <small>Generated from the name; you can customise it. Must be unique.</small>
+          </div>
+
+          <div className={styles.field}>
+            <label htmlFor="description">
+              Description <span>(optional)</span>
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              placeholder="What kind of recipes belong in this collection?"
+              maxLength={500}
+              rows={5}
+              disabled={isPending}
+            />
+            <div className={styles.descriptionMeta}>
+              <small>Give visitors a little context about the collection.</small>
+              <span>{description.length}/500</span>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.preview}>
+          <span className={styles.previewMark} aria-hidden="true">
+            {name.trim().charAt(0).toUpperCase() || "🎨"}
+          </span>
+          <div className={styles.previewCopy}>
+            <span className={styles.previewLabel}>COLLECTION PREVIEW</span>
+            <strong>{name.trim() || "Your category name"}</strong>
+            <span className={styles.previewSlug}>/{slug || "your-category"}</span>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <label htmlFor="slug">Slug</label>
-
-        <input
-          id="slug"
-          name="slug"
-          type="text"
-          value={slug}
-          onChange={(event) => setSlug(generateSlug(event.target.value))}
-          placeholder="e.g. rice-dishes"
-          required
-          maxLength={120}
-          disabled={isPending}
-        />
-
-        <small>This will be used in URLs and should be unique.</small>
+      <div className={styles.formFooter}>
+        <p>Your category will be available throughout the recipe collection.</p>
+        <button className={styles.submitButton} type="submit" disabled={isPending}>
+          {isPending
+            ? isEditing
+              ? "Saving changes…"
+              : "Creating category…"
+            : isEditing
+              ? "Save changes"
+              : "Create category"}
+          {!isPending && <span aria-hidden="true">→</span>}
+        </button>
       </div>
-
-      <div>
-        <label htmlFor="description">Description</label>
-
-        <textarea
-          id="description"
-          name="description"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          placeholder="Describe the recipes in this category..."
-          maxLength={500}
-          disabled={isPending}
-        />
-      </div>
-
-      <button type="submit" disabled={isPending}>
-        {isPending
-          ? isEditing
-            ? "Saving..."
-            : "Creating..."
-          : isEditing
-            ? "Update Category"
-            : "Create Category"}
-      </button>
     </form>
   );
 }

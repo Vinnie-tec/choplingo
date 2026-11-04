@@ -1,53 +1,81 @@
-
 "use client";
 
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { deleteCategory } from "@/app/admin/categories/actions";
-import { useToast } from "@/components/toast-provider";
+import styles from "./category-list.module.scss";
 
 type DeleteCategoryButtonProps = {
   categoryId: number;
   categoryName: string;
+  isPending: boolean;
+  disabled: boolean;
+  onConfirm: () => void;
 };
 
 export default function DeleteCategoryButton({
   categoryId,
   categoryName,
+  isPending,
+  disabled,
+  onConfirm,
 }: DeleteCategoryButtonProps) {
-  const router = useRouter();
-  const { showToast } = useToast();
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const [isPending, startTransition] = useTransition();
-
-  function handleDelete() {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${categoryName}"? This action cannot be undone.`
-    );
-
-    if (!confirmed) return;
-
-    startTransition(async () => {
-      const result = await deleteCategory(categoryId);
-
-      if (!result.success) {
-        showToast(result.message, "error");
-        return;
-      }
-
-      showToast(result.message, "success");
-      router.refresh();
-    });
+  function handleConfirm() {
+    setShowConfirmation(false);
+    onConfirm();
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleDelete}
-      disabled={isPending}
-    >
-      {isPending ? "Deleting..." : "Delete"}
-    </button>
+    <>
+      <button
+        className={styles.deleteButton}
+        type="button"
+        onClick={() => setShowConfirmation(true)}
+        disabled={disabled}
+      >
+        Delete
+      </button>
+
+      {showConfirmation && (
+        <div className={styles.dialogBackdrop}>
+          <div
+            className={styles.dialog}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby={`delete-category-title-${categoryId}`}
+            aria-describedby={`delete-category-description-${categoryId}`}
+          >
+            <span className={styles.dialogIcon} aria-hidden="true">!</span>
+            <p className={styles.dialogEyebrow}>REMOVE CATEGORY</p>
+            <h2 id={`delete-category-title-${categoryId}`}>
+              Delete {categoryName}?
+            </h2>
+            <p id={`delete-category-description-${categoryId}`}>
+              Categories can only be deleted when no recipes are assigned to
+              them. This action cannot be undone.
+            </p>
+            <div className={styles.dialogActions}>
+              <button
+                className={styles.cancelButton}
+                type="button"
+                onClick={() => setShowConfirmation(false)}
+                disabled={isPending}
+              >
+                Keep category
+              </button>
+              <button
+                className={styles.confirmDeleteButton}
+                type="button"
+                onClick={handleConfirm}
+                disabled={isPending}
+              >
+                {isPending ? "Deleting…" : "Delete category"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

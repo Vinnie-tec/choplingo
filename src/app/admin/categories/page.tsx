@@ -4,8 +4,8 @@ import { asc, count, eq } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { categories, recipes } from "@/lib/db/schema/recipe";
-
-import DeleteCategoryButton from "@/components/admin/delete-category-button";
+import AdminCategoryList from "@/components/admin/category-list";
+import styles from "../admin.module.scss";
 
 export const instant = false;
 
@@ -26,52 +26,28 @@ export default async function AdminCategoriesPage() {
     .orderBy(asc(categories.name));
 
   return (
-    <section>
-      <div>
-        <h1>Categories</h1>
-        <p>Manage your recipe categories.</p>
-
-        <Link href="/admin/categories/new">Add Category</Link>
+    <main className={styles.page}>
+      <div className={styles.pageHeading}>
+        <div>
+          <p className={styles.eyebrow}>ORGANISE YOUR COLLECTION</p>
+          <h1>Recipe categories</h1>
+          <p className={styles.subtitle}>
+            Group recipes into collections that make discovery feel effortless.
+          </p>
+        </div>
+        <Link className={styles.primaryButton} href="/admin/categories/new">
+          <span aria-hidden="true">＋</span> Add a category
+        </Link>
       </div>
-
-      <p>Total Categories: {allCategories.length}</p>
-
-      {allCategories.length === 0 ? (
-        <p>No categories have been created yet.</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Slug</th>
-              <th>Description</th>
-              <th>Recipes</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {allCategories.map((category) => (
-              <tr key={category.id}>
-                <td>{category.name}</td>
-                <td>{category.slug}</td>
-                <td>{category.description || "No description"}</td>
-                <td>{category.recipeCount}</td>
-                <td>
-                  <Link href={`/admin/categories/${category.id}/edit`}>
-                    Edit
-                  </Link>
-
-                  <DeleteCategoryButton
-                    categoryId={category.id}
-                    categoryName={category.name}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </section>
+      <div className={styles.collectionSummary}>
+        <span className={styles.summaryIcon} aria-hidden="true">🎨</span>
+        <p>
+          <strong>{allCategories.length}</strong>{" "}
+          {allCategories.length === 1 ? "category" : "categories"} organizing
+          your recipes
+        </p>
+      </div>
+      <AdminCategoryList categories={allCategories} />
+    </main>
   );
 }

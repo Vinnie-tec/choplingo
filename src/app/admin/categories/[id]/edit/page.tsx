@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { categories } from "@/lib/db/schema/recipe";
 import CategoryForm from "@/components/admin/category-form";
+import styles from "../../../admin.module.scss";
 
 type EditCategoryPageProps = {
   params: Promise<{ id: string }>;
@@ -39,17 +40,21 @@ export default async function EditCategoryPage({
   }
 
   return (
-    <section>
-      <div>
-        <h1>Edit Category</h1>
-        <p>Update the category details.</p>
-
-        <Link href="/admin/categories">
-          Back to Categories
+    <main className={styles.page}>
+      <div className={styles.pageHeading}>
+        <div>
+          <p className={styles.eyebrow}>REFINE YOUR COLLECTION</p>
+          <h1>Edit category</h1>
+          <p className={styles.subtitle}>
+            Update the name, URL, or description for{" "}
+            <strong>{category.name}</strong>.
+          </p>
+        </div>
+        <Link className={styles.secondaryButton} href="/admin/categories">
+          <span aria-hidden="true">←</span> Back to categories
         </Link>
       </div>
-
       <CategoryForm key={category.id} category={category} />
-    </section>
+    </main>
   );
 }
