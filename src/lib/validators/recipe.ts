@@ -24,6 +24,8 @@ export const createRecipeSchema = z.object({
   difficulty: z.enum(["easy", "medium", "hard"]),
 
   imageUrl: z.string().url().optional().or(z.literal("")),
+  
+  status: z.enum(["draft", "published"]).default("draft"),
 
   ingredients: z
     .array(

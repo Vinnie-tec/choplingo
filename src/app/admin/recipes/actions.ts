@@ -1,4 +1,3 @@
-
 "use server";
 
 import { and, eq, ne } from "drizzle-orm";
@@ -33,6 +32,10 @@ export async function createRecipe(formData: unknown) {
   const parsed = createRecipeSchema.safeParse(formData);
 
   if (!parsed.success) {
+    console.error(
+      "Recipe validation errors:",
+      parsed.error.flatten().fieldErrors,
+    );
     return {
       success: false,
       message: "Please check the recipe details.",
@@ -70,6 +73,7 @@ export async function createRecipe(formData: unknown) {
           difficulty: data.difficulty,
           imageUrl: data.imageUrl || null,
           instructions: data.instructions,
+          status: data.status,
         })
         .returning({ id: recipes.id });
 
@@ -143,7 +147,6 @@ export async function createRecipe(formData: unknown) {
   }
 }
 
-
 export async function updateRecipe(recipeId: number, formData: unknown) {
   // 1. Only administrators can edit recipes.
   const admin = await requireAdmin();
@@ -179,7 +182,7 @@ export async function updateRecipe(recipeId: number, formData: unknown) {
   // Prevent duplicate ingredient names in one recipe,
   // ignoring differences in letter casing.
   const ingredientNames = data.ingredients.map((item) =>
-    item.name.trim().toLowerCase()
+    item.name.trim().toLowerCase(),
   );
 
   if (new Set(ingredientNames).size !== ingredientNames.length) {
@@ -206,12 +209,7 @@ export async function updateRecipe(recipeId: number, formData: unknown) {
       const [slugConflict] = await tx
         .select({ id: recipes.id })
         .from(recipes)
-        .where(
-          and(
-            eq(recipes.slug, data.slug),
-            ne(recipes.id, recipeId)
-          )
-        )
+        .where(and(eq(recipes.slug, data.slug), ne(recipes.id, recipeId)))
         .limit(1);
 
       if (slugConflict) {
@@ -243,6 +241,7 @@ export async function updateRecipe(recipeId: number, formData: unknown) {
           difficulty: data.difficulty,
           imageUrl: data.imageUrl || null,
           instructions: data.instructions,
+          status: data.status,
           updatedAt: new Date(),
         })
         .where(eq(recipes.id, recipeId));
@@ -309,7 +308,6 @@ export async function updateRecipe(recipeId: number, formData: unknown) {
     };
   }
 }
-
 
 export async function deleteRecipe(recipeId: number) {
   // 1. Verify administrator permissions.

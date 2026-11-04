@@ -21,11 +21,11 @@ export default async function AdminRecipesPage() {
       difficulty: recipes.difficulty,
       preparationMinutes: recipes.preparationMinutes,
       cookingMinutes: recipes.cookingMinutes,
-      createdAt: recipes.createdAt,
       categoryName: categories.name,
+      status: recipes.status,
     })
     .from(recipes)
-    .innerJoin(categories, eq(recipes.categoryId, categories.id))
+    .leftJoin(categories, eq(recipes.categoryId, categories.id))
     .orderBy(desc(recipes.createdAt));
 
   return (

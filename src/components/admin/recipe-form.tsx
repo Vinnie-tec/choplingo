@@ -21,7 +21,7 @@ type InitialRecipeData = {
   preparationMinutes: number;
   cookingMinutes: number;
   servings: number;
- difficulty: RecipeDifficulty;
+  difficulty: RecipeDifficulty;
   imageUrl: string | null;
   ingredients: {
     name: string;
@@ -33,8 +33,8 @@ type InitialRecipeData = {
     step: number;
     instruction: string;
   }[];
+  status: "draft" | "published";
 };
-
 
 type IngredientInput = {
   name: string;
@@ -61,6 +61,10 @@ export default function RecipeForm({
   const [isPending, startTransition] = useTransition();
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  const [status, setStatus] = useState<"draft" | "published">(
+    initialData?.status ?? "draft",
+  );
 
   const [ingredients, setIngredients] = useState<IngredientInput[]>(
     initialData
@@ -117,6 +121,7 @@ export default function RecipeForm({
       servings: Number(formData.get("servings")),
       difficulty: formData.get("difficulty"),
       imageUrl: formData.get("imageUrl"),
+      status,
 
       ingredients: ingredients.map((item) => ({
         name: item.name,
@@ -253,6 +258,27 @@ export default function RecipeForm({
           <option value="medium">Medium</option>
           <option value="hard">Hard</option>
         </select>
+
+        <div>
+          <label htmlFor="status">Publication Status</label>
+
+          <select
+            id="status"
+            value={status}
+            onChange={(event) =>
+              setStatus(event.target.value as "draft" | "published")
+            }
+          >
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
+
+          <p>
+            {status === "draft"
+              ? "This recipe will not appear in the public recipe collection."
+              : "This recipe will be available to users."}
+          </p>
+        </div>
       </fieldset>
 
       <fieldset disabled={isPending}>

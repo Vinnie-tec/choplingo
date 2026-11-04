@@ -48,6 +48,7 @@ export default async function RecipesPage() {
     })
     .from(recipes)
     .innerJoin(categories, eq(recipes.categoryId, categories.id))
+    .where(eq(recipes.status, "published"))
     .orderBy(desc(recipes.createdAt));
 
   const recipesWithFavourites = recipeList.map((recipe) => ({

@@ -81,6 +81,8 @@ export const recipes = pgTable(
     difficulty: varchar("difficulty", { length: 20 })
       .notNull()
       .default("medium"),
+      
+    status: varchar("status", { length: 20 }).notNull().default("draft"),
 
     /**
      * Example:
