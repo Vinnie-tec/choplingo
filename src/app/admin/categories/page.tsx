@@ -5,6 +5,8 @@ import { asc, count, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { categories, recipes } from "@/lib/db/schema/recipe";
 
+export const instant = false;
+
 export default async function AdminCategoriesPage() {
   await connection();
 
@@ -27,9 +29,7 @@ export default async function AdminCategoriesPage() {
         <h1>Categories</h1>
         <p>Manage your recipe categories.</p>
 
-        <Link href="/admin/categories/new">
-          Add Category
-        </Link>
+        <Link href="/admin/categories/new">Add Category</Link>
       </div>
 
       <p>Total Categories: {allCategories.length}</p>
@@ -44,6 +44,7 @@ export default async function AdminCategoriesPage() {
               <th>Slug</th>
               <th>Description</th>
               <th>Recipes</th>
+              <th>Actions</th>
             </tr>
           </thead>
 
@@ -54,6 +55,11 @@ export default async function AdminCategoriesPage() {
                 <td>{category.slug}</td>
                 <td>{category.description || "No description"}</td>
                 <td>{category.recipeCount}</td>
+                <td>
+                  <Link href={`/admin/categories/${category.id}/edit`}>
+                    Edit
+                  </Link>
+                </td>
               </tr>
             ))}
           </tbody>
