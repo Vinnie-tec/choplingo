@@ -24,7 +24,6 @@ export async function saveFavourite(
 
   if (!session) {
     return {
-       
       success: false,
       message: "Please sign in to save favourites.",
     };
@@ -40,7 +39,10 @@ export async function saveFavourite(
 
   // 3. Confirm that the recipe actually exists.
   const [recipe] = await db
-    .select({ id: recipes.id })
+    .select({
+      id: recipes.id,
+      status: recipes.status,
+    })
     .from(recipes)
     .where(eq(recipes.id, recipeId))
     .limit(1);
@@ -49,6 +51,13 @@ export async function saveFavourite(
     return {
       success: false,
       message: "Recipe not found.",
+    };
+  }
+
+  if (recipe.status !== "published") {
+    return {
+      success: false,
+      message: "You cannot favourite an unpublished recipe.",
     };
   }
 
