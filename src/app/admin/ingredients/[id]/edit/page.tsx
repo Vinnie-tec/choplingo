@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { ingredients } from "@/lib/db/schema/recipe";
 
 import IngredientForm from "@/components/admin/ingredient-form";
+import styles from "@/app/admin/admin.module.scss";
 
 type EditIngredientPageProps = {
   params: Promise<{ id: string }>;
@@ -40,20 +41,20 @@ export default async function EditIngredientPage({
   }
 
   return (
-    <section>
-      <div>
-        <h1>Edit Ingredient</h1>
-        <p>Update the ingredient name.</p>
-
-        <Link href="/admin/ingredients">
-          Back to Ingredients
+    <main className={styles.page}>
+      <div className={styles.pageHeading}>
+        <div>
+          <p className={styles.eyebrow}>REFINE YOUR LIBRARY</p>
+          <h1>Edit ingredient</h1>
+          <p className={styles.subtitle}>
+            Update the shared name for <strong>{ingredient.name}</strong>.
+          </p>
+        </div>
+        <Link className={styles.secondaryButton} href="/admin/ingredients">
+          <span aria-hidden="true">←</span> Back to ingredients
         </Link>
       </div>
-
-      <IngredientForm
-        key={ingredient.id}
-        ingredient={ingredient}
-      />
-    </section>
+      <IngredientForm key={ingredient.id} ingredient={ingredient} />
+    </main>
   );
 }

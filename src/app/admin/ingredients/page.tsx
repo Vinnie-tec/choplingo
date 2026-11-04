@@ -2,10 +2,10 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { asc, count, eq } from "drizzle-orm";
 
-import DeleteIngredientButton from "@/components/admin/delete-ingredient-button";
-
 import { db } from "@/lib/db";
 import { ingredients, recipeIngredients } from "@/lib/db/schema/recipe";
+import AdminIngredientList from "@/components/admin/ingredient-list";
+import styles from "../admin.module.scss";
 
 export const instant = false;
 
@@ -28,46 +28,28 @@ export default async function AdminIngredientsPage() {
     .orderBy(asc(ingredients.name));
 
   return (
-    <section>
-      <div>
-        <h1>Ingredients</h1>
-        <p>Manage the ingredients used across your recipes.</p>
-
-        <Link href="/admin/ingredients/new">Add Ingredient</Link>
+    <main className={styles.page}>
+      <div className={styles.pageHeading}>
+        <div>
+          <p className={styles.eyebrow}>YOUR KITCHEN ESSENTIALS</p>
+          <h1>Ingredients</h1>
+          <p className={styles.subtitle}>
+            Keep the shared ingredient library tidy and ready for every recipe.
+          </p>
+        </div>
+        <Link className={styles.primaryButton} href="/admin/ingredients/new">
+          <span aria-hidden="true">＋</span> Add an ingredient
+        </Link>
       </div>
-
-      {ingredientList.length === 0 ? (
-        <p>No ingredients found.</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Recipes Using Ingredient</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {ingredientList.map((ingredient) => (
-              <tr key={ingredient.id}>
-                <td>{ingredient.name}</td>
-                <td>{ingredient.recipeCount}</td>
-                <td>
-                  <Link href={`/admin/ingredients/${ingredient.id}/edit`}>
-                    Edit
-                  </Link>
-
-                  <DeleteIngredientButton
-                    ingredientId={ingredient.id}
-                    ingredientName={ingredient.name}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </section>
+      <div className={styles.collectionSummary}>
+        <span className={styles.summaryIcon} aria-hidden="true">🎨</span>
+        <p>
+          <strong>{ingredientList.length}</strong>{" "}
+          {ingredientList.length === 1 ? "ingredient" : "ingredients"} in your
+          shared library
+        </p>
+      </div>
+      <AdminIngredientList ingredients={ingredientList} />
+    </main>
   );
 }

@@ -1,53 +1,84 @@
-
 "use client";
 
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 
-import { deleteIngredient } from "@/app/admin/ingredients/actions";
-import { useToast } from "@/components/toast-provider";
+import styles from "./ingredient-list.module.scss";
 
 type DeleteIngredientButtonProps = {
   ingredientId: number;
   ingredientName: string;
+  isPending: boolean;
+  disabled: boolean;
+  isUsed: boolean;
+  onConfirm: () => void;
 };
 
 export default function DeleteIngredientButton({
   ingredientId,
   ingredientName,
+  isPending,
+  disabled,
+  isUsed,
+  onConfirm,
 }: DeleteIngredientButtonProps) {
-  const router = useRouter();
-  const { showToast } = useToast();
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const [isPending, startTransition] = useTransition();
-
-  function handleDelete() {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${ingredientName}"? This action cannot be undone.`
-    );
-
-    if (!confirmed) return;
-
-    startTransition(async () => {
-      const result = await deleteIngredient(ingredientId);
-
-      if (!result.success) {
-        showToast(result.message, "error");
-        return;
-      }
-
-      showToast(result.message, "success");
-      router.refresh();
-    });
+  function handleConfirm() {
+    setShowConfirmation(false);
+    onConfirm();
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleDelete}
-      disabled={isPending}
-    >
-      {isPending ? "Deleting..." : "Delete"}
-    </button>
+    <>
+      <button
+        className={`${styles.deleteButton} ${isUsed ? styles.disabledDelete : ""}`}
+        type="button"
+        onClick={() => setShowConfirmation(true)}
+        disabled={disabled || isUsed}
+        title={isUsed ? "Remove this ingredient from its recipes first" : undefined}
+      >
+        {isUsed ? "In use" : "Delete"}
+      </button>
+
+      {showConfirmation && (
+        <div className={styles.dialogBackdrop}>
+          <div
+            className={styles.dialog}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby={`delete-ingredient-title-${ingredientId}`}
+            aria-describedby={`delete-ingredient-description-${ingredientId}`}
+          >
+            <span className={styles.dialogIcon} aria-hidden="true">!</span>
+            <p className={styles.dialogEyebrow}>REMOVE INGREDIENT</p>
+            <h2 id={`delete-ingredient-title-${ingredientId}`}>
+              Delete {ingredientName}?
+            </h2>
+            <p id={`delete-ingredient-description-${ingredientId}`}>
+              This removes the unused ingredient from your shared library.
+              This action cannot be undone.
+            </p>
+            <div className={styles.dialogActions}>
+              <button
+                className={styles.cancelButton}
+                type="button"
+                onClick={() => setShowConfirmation(false)}
+                disabled={isPending}
+              >
+                Keep ingredient
+              </button>
+              <button
+                className={styles.confirmDeleteButton}
+                type="button"
+                onClick={handleConfirm}
+                disabled={isPending}
+              >
+                {isPending ? "Deleting…" : "Delete ingredient"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
