@@ -5,9 +5,8 @@ import { and, count, desc, eq, ilike, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { user } from "@/lib/db/schema/auth";
 import { requireAdmin } from "@/lib/admin-auth";
-import DeleteUserButton from "@/components/admin/delete-user-button";
-
-import UserRoleSelector from "@/components/admin/user-role-selector";
+import AdminUserList from "@/components/admin/user-list";
+import styles from "@/components/admin/user-management.module.scss";
 
 export const instant = false;
 
@@ -80,102 +79,95 @@ export default async function AdminUsersPage({
     .orderBy(desc(user.createdAt));
 
   return (
-    <section>
-      <div>
-        <h1>User Management</h1>
-        <p>Manage ChopLingo users and their administrative permissions.</p>
+    <main className={styles.page}>
+      <div className={styles.pageHeading}>
+        <div>
+          <p className={styles.eyebrow}>COMMUNITY & ACCESS</p>
+          <h1>User management</h1>
+          <p className={styles.subtitle}>
+            Manage your community and keep administrative access up to date.
+          </p>
+        </div>
       </div>
 
-      <div>
-        <article>
-          <h2>Total Users</h2>
-          <p>{totalUsers}</p>
+      <section className={styles.stats} aria-label="User account statistics">
+        <article className={styles.statCard}>
+          <span className={`${styles.statIcon} ${styles.totalIcon}`} aria-hidden="true">◎</span>
+          <div>
+            <p>Total members</p>
+            <strong>{totalUsers}</strong>
+          </div>
         </article>
-
-        <article>
-          <h2>Administrators</h2>
-          <p>{totalAdmins}</p>
+        <article className={styles.statCard}>
+          <span className={`${styles.statIcon} ${styles.adminIcon}`} aria-hidden="true">✦</span>
+          <div>
+            <p>Administrators</p>
+            <strong>{totalAdmins}</strong>
+          </div>
         </article>
-
-        <article>
-          <h2>Regular Users</h2>
-          <p>{totalRegularUsers}</p>
+        <article className={styles.statCard}>
+          <span className={`${styles.statIcon} ${styles.memberIcon}`} aria-hidden="true">♡</span>
+          <div>
+            <p>Community members</p>
+            <strong>{totalRegularUsers}</strong>
+          </div>
         </article>
-      </div>
+      </section>
 
-      {/* Search and role filters */}
-      <form method="GET">
-        <div>
-          <label htmlFor="user-search">Search users</label>
-          <input
-            id="user-search"
-            type="search"
-            name="q"
-            placeholder="Search by name or email..."
-            defaultValue={searchTerm}
-          />
-        </div>
+      <section className={styles.filters} aria-label="User filters">
+        <form className={styles.filterForm} method="GET">
+          <div className={styles.searchField}>
+            <label htmlFor="user-search">Search members</label>
+            <input
+              id="user-search"
+              type="search"
+              name="q"
+              placeholder="Name or email address"
+              defaultValue={searchTerm}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="role-filter">Filter by role</label>
-          <select id="role-filter" name="role" defaultValue={roleFilter ?? ""}>
-            <option value="">All roles</option>
-            <option value="user">Users</option>
-            <option value="admin">Administrators</option>
-          </select>
-        </div>
+          <div className={styles.roleFilterField}>
+            <label htmlFor="role-filter">Account role</label>
+            <select id="role-filter" name="role" defaultValue={roleFilter ?? ""}>
+              <option value="">All roles</option>
+              <option value="user">Members</option>
+              <option value="admin">Administrators</option>
+            </select>
+          </div>
 
-        <button type="submit">Apply Filters</button>
+          <div className={styles.filterActions}>
+            <button className={styles.applyButton} type="submit">
+              Apply filters
+            </button>
+            {(searchTerm || roleFilter) && (
+              <a className={styles.clearLink} href="/admin/users">
+                Clear
+              </a>
+            )}
+          </div>
+        </form>
 
-        <a href="/admin/users">Clear Filters</a>
-      </form>
-
-      <p>Users found: {users.length}</p>
-
-      {users.length === 0 ? (
-        <p>
-          {searchTerm || roleFilter
-            ? "No users match your search or selected filter."
-            : "No registered users found."}
+        <p className={styles.resultCount} aria-live="polite">
+          <strong>{users.length}</strong>{" "}
+          {users.length === 1 ? "member" : "members"} found
         </p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Date Registered</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+      </section>
 
-          <tbody>
-            {users.map((item) => (
-              <tr key={item.id}>
-                <td>{item.name}</td>
-                <td>{item.email}</td>
-                <td>{item.role}</td>
-                <td>{item.createdAt.toLocaleDateString()}</td>
-                <td>
-                  <UserRoleSelector
-                    userId={item.id}
-                    currentRole={item.role as "user" | "admin"}
-                    userName={item.name}
-                    isCurrentUser={item.id === adminSession.session.user.id}
-                  />
-
-                  <DeleteUserButton
-                    userId={item.id}
-                    userName={item.name}
-                    isCurrentUser={item.id === adminSession.session.user.id}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </section>
+      <AdminUserList
+        hasFilters={Boolean(searchTerm || roleFilter)}
+        currentUserId={adminSession.session.user.id}
+        users={users.map((item) => ({
+          ...item,
+          role: item.role === "admin" ? ("admin" as const) : ("user" as const),
+          registeredAt: item.createdAt.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            timeZone: "UTC",
+          }),
+        }))}
+      />
+    </main>
   );
 }
