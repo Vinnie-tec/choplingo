@@ -1,8 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { startTransition, useMemo, useOptimistic, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import DeleteRecipeButton from "@/components/admin/delete-recipe-button";
+import { updateRecipeStatus } from "@/app/admin/recipes/actions";
+import { useToast } from "@/components/toast-provider";
 
 type AdminRecipe = {
   id: number;
@@ -24,11 +28,64 @@ export default function AdminRecipeList({ recipes }: RecipeListProps) {
     "all" | "published" | "draft"
   >("all");
 
-  const filteredRecipes = useMemo(() => {
-    if (statusFilter === "all") return recipes;
+  const [pendingRecipeId, setPendingRecipeId] = useState<number | null>(null);
 
-    return recipes.filter((recipe) => recipe.status === statusFilter);
-  }, [recipes, statusFilter]);
+  const [optimisticRecipes, setOptimisticRecipes] = useOptimistic(
+    recipes,
+    (
+      currentRecipes,
+      update: { recipeId: number; status: "draft" | "published" },
+    ) =>
+      currentRecipes.map((recipe) =>
+        recipe.id === update.recipeId
+          ? { ...recipe, status: update.status }
+          : recipe,
+      ),
+  );
+
+  const router = useRouter();
+  const { showToast } = useToast();
+
+  const filteredRecipes = useMemo(() => {
+    if (statusFilter === "all") return optimisticRecipes;
+
+    return optimisticRecipes.filter((recipe) => recipe.status === statusFilter);
+  }, [optimisticRecipes, statusFilter]);
+
+  // Switch between published and draft.
+  function handleStatusChange(recipe: AdminRecipe) {
+    const nextStatus = recipe.status === "published" ? "draft" : "published";
+
+    setPendingRecipeId(recipe.id);
+
+    startTransition(async () => {
+      // Immediately update the UI before contacting the server.
+      setOptimisticRecipes({
+        recipeId: recipe.id,
+        status: nextStatus,
+      });
+
+      try {
+        const result = await updateRecipeStatus({
+          recipeId: recipe.id,
+          status: nextStatus,
+        });
+
+        if (!result.success) {
+          showToast(result.message, "error");
+          return;
+        }
+
+        showToast(result.message, "success");
+
+        router.refresh();
+      } catch {
+        showToast("Something went wrong. Please try again.", "error");
+      } finally {
+        setPendingRecipeId(null);
+      }
+    });
+  }
 
   return (
     <section>
@@ -48,7 +105,7 @@ export default function AdminRecipeList({ recipes }: RecipeListProps) {
         </select>
 
         <p>
-          Showing {filteredRecipes.length} of {recipes.length} recipes
+          Showing {filteredRecipes.length} of {optimisticRecipes.length} recipes
         </p>
       </div>
 
@@ -66,6 +123,7 @@ export default function AdminRecipeList({ recipes }: RecipeListProps) {
               <th>Status</th>
               <th>View</th>
               <th>Edit</th>
+              <th>Publish / Unpublish</th>
               <th>Delete</th>
             </tr>
           </thead>
@@ -78,15 +136,31 @@ export default function AdminRecipeList({ recipes }: RecipeListProps) {
                 <td>{recipe.difficulty}</td>
                 <td>{recipe.preparationMinutes} mins</td>
                 <td>{recipe.cookingMinutes} mins</td>
-                <td>
-                  {recipe.status === "published" ? "Published" : "Draft"}
-                </td>
+
+                <td>{recipe.status === "published" ? "Published" : "Draft"}</td>
+
                 <td>
                   <Link href={`/recipes/${recipe.slug}`}>View</Link>
                 </td>
+
                 <td>
                   <Link href={`/admin/recipes/${recipe.id}/edit`}>Edit</Link>
                 </td>
+
+                <td>
+                  <button
+                    type="button"
+                    onClick={() => handleStatusChange(recipe)}
+                    disabled={pendingRecipeId === recipe.id}
+                  >
+                    {pendingRecipeId === recipe.id
+                      ? "Updating..."
+                      : recipe.status === "published"
+                        ? "Unpublish"
+                        : "Publish"}
+                  </button>
+                </td>
+
                 <td>
                   <DeleteRecipeButton
                     recipeId={recipe.id}

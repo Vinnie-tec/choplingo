@@ -13,6 +13,7 @@ import {
 
 import { requireAdmin } from "@/lib/admin-auth";
 import { createRecipeSchema } from "@/lib/validators/recipe";
+import { recipeStatusSchema } from "@/lib/validators/recipe-status";
 
 export async function createRecipe(formData: unknown) {
   // 1. Check administrator permissions.
@@ -362,6 +363,74 @@ export async function deleteRecipe(recipeId: number) {
     return {
       success: false,
       message: "Something went wrong while deleting the recipe.",
+    };
+  }
+}
+
+export async function updateRecipeStatus(input: unknown) {
+  // 1. Verify administrator permissions.
+  const admin = await requireAdmin();
+
+  if (!admin.authorized) {
+    return {
+      success: false,
+      message: "You are not authorised to change recipe status.",
+    };
+  }
+
+  // 2. Validate the submitted data.
+  const parsed = recipeStatusSchema.safeParse(input);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: "Invalid recipe status details.",
+    };
+  }
+
+  const { recipeId, status } = parsed.data;
+
+  try {
+    // 3. Update the recipe's publication status.
+    const [updatedRecipe] = await db
+      .update(recipes)
+      .set({
+        status,
+        updatedAt: new Date(),
+      })
+      .where(eq(recipes.id, recipeId))
+      .returning({
+        id: recipes.id,
+        slug: recipes.slug,
+      });
+
+    if (!updatedRecipe) {
+      return {
+        success: false,
+        message: "Recipe not found.",
+      };
+    }
+
+    // 4. Refresh affected pages.
+    revalidatePath("/admin");
+    revalidatePath("/admin/recipes");
+    revalidatePath("/recipes");
+    revalidatePath("/favourites");
+    revalidatePath(`/recipes/${updatedRecipe.slug}`);
+
+    return {
+      success: true,
+      message:
+        status === "published"
+          ? "Recipe published successfully."
+          : "Recipe unpublished successfully.",
+    };
+  } catch (error) {
+    console.error("Update recipe status error:", error);
+
+    return {
+      success: false,
+      message: "We couldn't update the recipe status. Please try again.",
     };
   }
 }

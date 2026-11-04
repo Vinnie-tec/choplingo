@@ -6,7 +6,6 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 
 import { recipes, categories } from "@/lib/db/schema/recipe";
-import DeleteRecipeButton from "@/components/admin/delete-recipe-button";
 
 import AdminRecipeList from "@/components/admin/recipe-list";
 
