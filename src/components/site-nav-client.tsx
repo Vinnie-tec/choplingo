@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useToast } from "@/components/toast-provider";
@@ -17,8 +17,17 @@ export default function SiteNavClient({
 }) {
   const { data: session, isPending } = authClient.useSession();
   const { showToast } = useToast();
+  const pathname = usePathname();
   const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const activeSection =
+    pathname === "/recipes" || pathname.startsWith("/recipes/")
+      ? "/recipes"
+      : pathname === "/favourites"
+        ? "/favourites"
+        : pathname === "/admin" || pathname.startsWith("/admin/")
+          ? "/admin"
+          : null;
 
   // Prefer the server-fetched session while the client hook initializes.
   const currentSession = isPending ? initialSession : session;
@@ -66,14 +75,32 @@ export default function SiteNavClient({
         </Link>
 
         <nav aria-label="Main navigation" className={styles.nav}>
-          <Link className={styles.navLink} href="/recipes">
+          <Link
+            aria-current={activeSection === "/recipes" ? "page" : undefined}
+            className={`${styles.navLink} ${
+              activeSection === "/recipes" ? styles.navLinkActive : ""
+            }`}
+            href="/recipes"
+          >
             Recipes
           </Link>
-          <Link className={styles.navLink} href="/favourites">
+          <Link
+            aria-current={activeSection === "/favourites" ? "page" : undefined}
+            className={`${styles.navLink} ${
+              activeSection === "/favourites" ? styles.navLinkActive : ""
+            }`}
+            href="/favourites"
+          >
             My Favourites
           </Link>
-          <Link className={styles.navLink} href="/#how-it-works">
-            Our story
+          <Link
+            aria-current={activeSection === "/admin" ? "page" : undefined}
+            className={`${styles.navLink} ${
+              activeSection === "/admin" ? styles.navLinkActive : ""
+            }`}
+            href="/admin"
+          >
+            AdminHub
           </Link>
         </nav>
 

@@ -99,7 +99,7 @@ export default async function AdminUsersPage({
           </div>
         </article>
         <article className={styles.statCard}>
-          <span className={`${styles.statIcon} ${styles.adminIcon}`} aria-hidden="true">✦</span>
+          <span className={`${styles.statIcon} ${styles.adminIcon}`} aria-hidden="true">@</span>
           <div>
             <p>Administrators</p>
             <strong>{totalAdmins}</strong>

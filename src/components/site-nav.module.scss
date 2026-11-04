@@ -55,6 +55,11 @@
 }
 
 .navLink {
+  position: relative;
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  padding: 0 2px;
   color: var(--color-text-muted);
   font-size: 13px;
   font-weight: 600;
@@ -62,6 +67,28 @@
 
   &:hover {
     color: var(--color-brand);
+  }
+
+  &::after {
+    position: absolute;
+    right: 2px;
+    bottom: 3px;
+    left: 2px;
+    height: 2px;
+    border-radius: 999px;
+    background: var(--color-brand);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 180ms ease;
+  }
+}
+
+.navLinkActive {
+  color: var(--color-brand-strong);
+
+  &::after {
+    transform: scaleX(1);
   }
 }
 
