@@ -1,0 +1,468 @@
+.reviewList {
+  display: grid;
+  gap: 12px;
+}
+
+.reviewCard {
+  padding: 18px 20px;
+  border: 1px solid var(--color-glass-border);
+  border-radius: 20px;
+  background: var(--color-glass);
+  box-shadow: 0 12px 32px var(--color-shadow);
+  backdrop-filter: blur(16px);
+  transition: border-color 160ms ease, transform 160ms ease, opacity 160ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(242, 123, 53, 0.3);
+  }
+
+  &[aria-busy="true"] {
+    opacity: 0.6;
+  }
+}
+
+.reviewTopline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.recipe {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.recipeMark {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 13px;
+  background: linear-gradient(145deg, var(--color-background-secondary), var(--color-brand-soft));
+  color: var(--color-brand-strong);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.recipeInfo {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.recipeLink {
+  max-width: 460px;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--color-brand-strong);
+  }
+}
+
+.reviewDate {
+  color: var(--color-text-muted);
+  font-size: 9px;
+}
+
+.rating {
+  display: inline-flex;
+  min-height: 31px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px;
+  border: 1px solid rgba(242, 184, 75, 0.22);
+  border-radius: 999px;
+  background: rgba(242, 184, 75, 0.11);
+  color: #b47717;
+  font-size: 10px;
+
+  > span:first-child {
+    font-size: 13px;
+  }
+
+  strong {
+    font-size: 10px;
+  }
+}
+
+.ratingMaximum {
+  color: var(--color-text-muted);
+  font-size: 9px;
+}
+
+.comment {
+  margin: 15px 0 17px;
+  color: var(--color-text);
+  font-size: 11px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.noComment {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.reviewFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.reviewer {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+
+  > div {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+
+  strong,
+  > div span {
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  strong {
+    color: var(--color-text);
+    font-size: 10px;
+  }
+
+  > div span {
+    color: var(--color-text-muted);
+    font-size: 9px;
+  }
+}
+
+.reviewerAvatar {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 11px;
+  background: var(--color-background-secondary);
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.deleteButton {
+  display: inline-flex;
+  min-height: 35px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid rgba(220, 91, 77, 0.18);
+  border-radius: 11px;
+  background: rgba(220, 91, 77, 0.07);
+  color: #c45043;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+
+  svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: rgba(220, 91, 77, 0.35);
+    background: rgba(220, 91, 77, 0.12);
+    box-shadow: 0 5px 13px rgba(173, 64, 54, 0.1);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.55;
+  }
+}
+
+.emptyState {
+  display: grid;
+  justify-items: center;
+  padding: 48px 24px;
+  border: 1px solid var(--color-glass-border);
+  border-radius: 22px;
+  background: var(--color-glass);
+  box-shadow: 0 16px 42px var(--color-shadow);
+  text-align: center;
+  backdrop-filter: blur(16px);
+
+  h2 {
+    margin: 14px 0 0;
+    color: var(--color-text);
+    font-size: 17px;
+    letter-spacing: -0.5px;
+  }
+
+  p {
+    max-width: 390px;
+    margin: 8px 0 0;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    line-height: 1.7;
+  }
+}
+
+.emptyIcon {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 15px;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
+  font-size: 19px;
+}
+
+.clearLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 17px;
+  color: var(--color-brand-strong);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.dialogBackdrop {
+  position: fixed;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(24, 19, 16, 0.52);
+  inset: 0;
+  animation: review-dialog-backdrop-in 160ms ease-out both;
+  backdrop-filter: blur(9px);
+}
+
+.dialog {
+  width: min(100%, 410px);
+  padding: 28px;
+  border: 1px solid var(--color-glass-border);
+  border-radius: 23px;
+  background:
+    radial-gradient(ellipse at 100% 0, rgba(220, 91, 77, 0.09), transparent 16rem),
+    var(--color-surface-raised);
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.28);
+  text-align: left;
+  animation: review-dialog-in 190ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  backdrop-filter: blur(24px);
+
+  h2 {
+    margin: 7px 0 0;
+    color: var(--color-text);
+    font-size: 23px;
+    letter-spacing: -0.9px;
+    line-height: 1.2;
+  }
+
+  > p:not(.dialogEyebrow) {
+    margin: 11px 0 0;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    line-height: 1.75;
+
+    strong {
+      color: var(--color-text);
+    }
+  }
+}
+
+.dialogIcon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  margin-bottom: 17px;
+  border: 1px solid rgba(220, 91, 77, 0.18);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(220, 91, 77, 0.16), rgba(220, 91, 77, 0.08));
+  color: #c45043;
+
+  svg {
+    width: 23px;
+    height: 23px;
+  }
+}
+
+.dialogEyebrow {
+  margin: 0;
+  color: #c45043;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.dialogNotice {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 16px !important;
+  color: #bd4d3e !important;
+  font-size: 10px !important;
+  font-weight: 700;
+
+  span {
+    display: grid;
+    width: 16px;
+    height: 16px;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(220, 91, 77, 0.13);
+    font-size: 10px;
+  }
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 23px;
+  padding-top: 17px;
+  border-top: 1px solid var(--color-border);
+
+  button {
+    min-height: 41px;
+    padding: 0 15px;
+    border-radius: 11px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+
+    &:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+  }
+}
+
+.cancelButton {
+  border: 1px solid var(--color-border);
+  background: var(--color-glass);
+  color: var(--color-text);
+
+  &:hover:not(:disabled) {
+    border-color: rgba(127, 106, 88, 0.3);
+    background: var(--color-surface);
+  }
+}
+
+.confirmDeleteButton {
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, #d75f52, #b83f35);
+  box-shadow: 0 7px 16px rgba(173, 64, 54, 0.19);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 10px 20px rgba(173, 64, 54, 0.27);
+  }
+}
+
+@keyframes review-dialog-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes review-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 560px) {
+  .reviewCard {
+    padding: 15px;
+    border-radius: 17px;
+  }
+
+  .recipeLink {
+    max-width: 205px;
+    font-size: 11px;
+  }
+
+  .reviewer strong,
+  .reviewer > div span {
+    max-width: 190px;
+  }
+
+  .dialog {
+    padding: 23px 20px;
+    border-radius: 21px;
+  }
+
+  .dialogActions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reviewCard,
+  .deleteButton,
+  .dialogBackdrop,
+  .dialog,
+  .dialogActions button {
+    transition: none;
+    animation: none;
+  }
+}

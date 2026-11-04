@@ -1,13 +1,14 @@
 
 import { connection } from "next/server";
-import Link from "next/link";
 import { and, desc, eq, ilike } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { recipes } from "@/lib/db/schema/recipe";
 import { user } from "@/lib/db/schema/auth";
 import { recipeReviews } from "@/lib/db/schema/review";
-import DeleteReviewButton from "@/components/admin/delete-review-button";
+import AdminReviewList from "@/components/admin/review-list";
+import Link from "next/link";
+import styles from "../admin.module.scss";
 
 export const instant = false;
 
@@ -64,100 +65,65 @@ export default async function AdminReviewsPage({
     .orderBy(desc(recipeReviews.createdAt));
 
   return (
-    <section>
-      <div>
-        <h1>Review Moderation</h1>
-        <p>Monitor reviews submitted by ChopLingo users.</p>
+    <main className={styles.page}>
+      <div className={styles.pageHeading}>
+        <div>
+          <p className={styles.eyebrow}>COMMUNITY FEEDBACK</p>
+          <h1>Review moderation</h1>
+          <p className={styles.subtitle}>
+            Keep an eye on the feedback your recipes are receiving.
+          </p>
+        </div>
       </div>
 
-      {/* Search and rating filters */}
-      <form method="GET">
-        <div>
-          <label htmlFor="recipe">Search by recipe</label>
-
-          <input
-            id="recipe"
-            type="search"
-            name="recipe"
-            placeholder="e.g. Nigerian Jollof Rice"
-            defaultValue={search}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="rating">Filter by rating</label>
-
-          <select
-            id="rating"
-            name="rating"
-            defaultValue={rating?.toString() ?? ""}
-          >
-            <option value="">All ratings</option>
-            <option value="5">5 stars</option>
-            <option value="4">4 stars</option>
-            <option value="3">3 stars</option>
-            <option value="2">2 stars</option>
-            <option value="1">1 star</option>
-          </select>
-        </div>
-
-        <button type="submit">Apply Filters</button>
-
-        <Link href="/admin/reviews">Clear Filters</Link>
-      </form>
-
-      <p>Matching reviews: {reviewList.length}</p>
-
-      {reviewList.length === 0 ? (
-        <p>
-          {search || rating !== undefined
-            ? "No reviews match your selected filters."
-            : "No reviews have been submitted yet."}
+      <section className={styles.reviewFilters} aria-label="Review filters">
+        <form className={styles.reviewFilterForm} method="GET">
+          <div className={styles.reviewSearchField}>
+            <label htmlFor="recipe">Search recipes</label>
+            <input
+              id="recipe"
+              type="search"
+              name="recipe"
+              placeholder="Search by recipe name"
+              defaultValue={search}
+            />
+          </div>
+          <div className={styles.reviewRatingField}>
+            <label htmlFor="rating">Rating</label>
+            <select
+              id="rating"
+              name="rating"
+              defaultValue={rating?.toString() ?? ""}
+            >
+              <option value="">All ratings</option>
+              <option value="5">5 stars</option>
+              <option value="4">4 stars</option>
+              <option value="3">3 stars</option>
+              <option value="2">2 stars</option>
+              <option value="1">1 star</option>
+            </select>
+          </div>
+          <div className={styles.reviewFilterActions}>
+            <button className={styles.reviewApplyButton} type="submit">
+              Apply filters
+            </button>
+            {(search || rating !== undefined) && (
+              <Link className={styles.reviewClearLink} href="/admin/reviews">
+                Clear
+              </Link>
+            )}
+          </div>
+        </form>
+        <p className={styles.reviewResultCount}>
+          <strong>{reviewList.length}</strong>{" "}
+          {reviewList.length === 1 ? "review" : "reviews"} found
         </p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Recipe</th>
-              <th>Reviewer</th>
-              <th>Rating</th>
-              <th>Comment</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
+      </section>
 
-          <tbody>
-            {reviewList.map((review) => (
-              <tr key={review.id}>
-                <td>
-                  <Link href={`/recipes/${review.recipeSlug}`}>
-                    {review.recipeTitle}
-                  </Link>
-                </td>
-
-                <td>
-                  <div>{review.reviewerName}</div>
-                  <small>{review.reviewerEmail}</small>
-                </td>
-
-                <td>{review.rating}/5</td>
-
-                <td>{review.comment || "No comment"}</td>
-
-                <td>{review.createdAt.toLocaleDateString()}</td>
-
-                <td>
-                  <DeleteReviewButton
-                    reviewId={review.id}
-                    recipeTitle={review.recipeTitle}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </section>
+      <AdminReviewList
+        reviews={reviewList}
+        hasFilters={Boolean(search || rating !== undefined)}
+      />
+    </main>
   );
 }
